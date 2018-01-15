@@ -21,7 +21,7 @@ def beta_est(y, R):
 def beta_est_cho(y, R):
 	#Beta qui sors est unidimensionnel si l'on suit la formule
 	#Donnee dans l'overleaf, est-ce normal ?
-	n = y.shape[1]
+    n = y.shape[1]
     Rinv = cho_inv.cholesky_inv(R)
     ones = np.ones((n, 1))
     one_Rinv_one = float(np.dot(np.dot(ones.T, Rinv), ones))
