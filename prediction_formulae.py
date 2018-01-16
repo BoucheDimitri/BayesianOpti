@@ -74,5 +74,12 @@ def y_est_bis(rx, y, Rinv, beta_hat):
     y_est = beta_hat + np.dot(rxt_Rinv, y - beta_hat * ones)
     return float(y_est)
 
+def hat_sigma_square(y, Rinv, beta_hat):
+    n = Rinv.shape[0]
+    ones = np.ones((n, 1))
+    err = y - beta_hat * ones
+    return float((1.0/float(n)) * np.dot(np.dot(err.T, Rinv), err))
+
+
 
 

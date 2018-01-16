@@ -38,5 +38,7 @@ beta = pred.beta_est_bis(y, Rinv)
 print(beta)
 y_hat = pred.y_est_bis(rx, y, Rinv, beta)
 print(y_hat)
+sighat = pred.hat_sigma_square(y, Rinv, beta)
+print(sighat)
 
 
