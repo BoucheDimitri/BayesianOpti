@@ -29,11 +29,22 @@ def beta_est(y, R):
 
 
 def beta_est_bis(y, Rinv):
-    n = y.shape[1]
+    """
+    Estimate of beta taking Rinv as input (no inversion inside function)
+
+    Args: 
+        y (numpy.ndarray) : y, shape=(n, 1)
+        Rinv (numpy.ndarray) : Inverse of R, shape=(n, n)
+
+    Returns:
+        float. Estimation of beta
+    """
+    n = y.shape[0]
     ones = np.ones((n, 1))
+    #print(np.dot(ones.T, Rinv).shape)
     one_Rinv_one = float(np.dot(np.dot(ones.T, Rinv), ones))
     beta_est = (1.0 / one_Rinv_one) * np.dot(np.dot(ones.T, Rinv), y)
-    return beta_est
+    return float(beta_est)
 
 
 #def beta_est_gene(y, Rinv, F):
@@ -57,11 +68,11 @@ def y_est(x, y, beta_est, r_x, R):
 
 
 def y_est_bis(rx, y, Rinv, beta_hat):
-    n = y.shape[1]
+    n = y.shape[0]
     ones = np.ones((n, 1))
     rxt_Rinv = np.dot(rx.T, Rinv)
     y_est = beta_hat + np.dot(rxt_Rinv, y - beta_hat * ones)
-    return y_est
+    return float(y_est)
 
 
 
