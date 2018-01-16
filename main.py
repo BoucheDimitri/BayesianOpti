@@ -46,8 +46,10 @@ print(sighat)
 params = np.zeros((3, ))
 params[0: 2] = theta_vec
 params[2] = p
-sigmle = max_llk.hat_sigmaz_sqr_mle(xtest, y, params)
+sigmle = max_llk.hat_sigmaz_sqr_mle(y, R, params)
 print(sigmle)
+llk = max_llk.log_likelihood(xtest, y, params)
+print(llk)
 
 
 
