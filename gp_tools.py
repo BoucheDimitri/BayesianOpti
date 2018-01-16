@@ -30,7 +30,7 @@ def kernel_mat(xmat, theta_vec, p):
     Compute correlation matrix for a set of 2d points
 
     Args:
-        xmat (numpy.ndarray) : shape = (n, 2)*
+        xmat (numpy.ndarray) : shape = (n, 2)
         theta_vec (numpy.ndarray) : vector of theta params, shape = (2, )
         p (float) : power used to compute the distance in the exp
 
