@@ -3,8 +3,11 @@ import math
 import cho_inv
 
 
-def SCF_exp(x1, x2, theta, p):
-    output = math.exp(theta[1])
+#Pas sa place dans ce fichier
+#Deplace dans le fichier gp_tools
+#Sous le nom corr_func
+#def SCF_exp(x1, x2, theta, p):
+    #output = math.exp(theta[1])
 
 
 def beta_est(y, R):
