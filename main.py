@@ -3,6 +3,7 @@ import cho_inv
 import prediction_formulae as pred 
 import gp_tools
 import test_functions as test_func 
+import max_likelihood as max_llk
 
 
 
@@ -38,7 +39,15 @@ beta = pred.beta_est_bis(y, Rinv)
 print(beta)
 y_hat = pred.y_est_bis(rx, y, Rinv, beta)
 print(y_hat)
-sighat = pred.hat_sigma_square(y, Rinv, beta)
+sighat = pred.hat_sigmaz_sqr(y, Rinv, beta)
 print(sighat)
+
+#Test for mle
+params = np.zeros((3, ))
+params[0: 2] = theta_vec
+params[2] = p
+sigmle = max_llk.hat_sigmaz_sqr_mle(xtest, y, params)
+print(sigmle)
+
 
 

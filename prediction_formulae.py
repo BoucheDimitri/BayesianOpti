@@ -31,6 +31,7 @@ def beta_est(y, R):
 def beta_est_bis(y, Rinv):
     """
     Estimate of beta taking Rinv as input (no inversion inside function)
+    In simple kriging setup (so beta is a float)
 
     Args: 
         y (numpy.ndarray) : y, shape=(n, 1)
@@ -74,7 +75,8 @@ def y_est_bis(rx, y, Rinv, beta_hat):
     y_est = beta_hat + np.dot(rxt_Rinv, y - beta_hat * ones)
     return float(y_est)
 
-def hat_sigma_square(y, Rinv, beta_hat):
+
+def hat_sigmaz_sqr(y, Rinv, beta_hat):
     n = Rinv.shape[0]
     ones = np.ones((n, 1))
     err = y - beta_hat * ones
