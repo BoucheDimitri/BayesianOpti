@@ -28,31 +28,23 @@ def beta_est(y, R):
     return beta_est
 
 
-def beta_est_cho(y, R):
+def beta_est_bis(y, Rinv):
     n = y.shape[1]
-    Rinv = cho_inv.cholesky_inv(R)
     ones = np.ones((n, 1))
     one_Rinv_one = float(np.dot(np.dot(ones.T, Rinv), ones))
     beta_est = (1.0 / one_Rinv_one) * np.dot(np.dot(ones.T, Rinv), y)
     return beta_est
 
 
-def beta_est_gene(y, Rinv, F):
-        # C'est peut être dommage de faire juste le kriging le plus simple
-        # qui revient à faire une regression sur processus gaussien avec
-        # intercept du coup la problématique des bruits corrélés n'est pas
-        # vraiment approfondi
-
-    # On lui donne directement l'inverse de R en paramètre puisque celui ci apparait
-    # Dans pleins de formules il faut mieux le calculer seulement une fois
-    Ft_Rinv = np.dot(F.T, Rinv)
-    Ft_Rinv_F = np.dot(Ft_Rinv, F)
-    Ft_Rinv_F_inv = cho_inv.cholesky_inv(Ft_Rinv_F)
-    beta est = np.dot(np.dot(Ft_Rinv_F_inv, Ft_Rinv), y)
-    return beta_est
+#def beta_est_gene(y, Rinv, F):
+    #Ft_Rinv = np.dot(F.T, Rinv)
+    #Ft_Rinv_F = np.dot(Ft_Rinv, F)
+    #Ft_Rinv_F_inv = cho_inv.cholesky_inv(Ft_Rinv_F)
+    #beta est = np.dot(np.dot(Ft_Rinv_F_inv, Ft_Rinv), y)
+    #return beta_est
 
 
-def y_est(x, y, beta_est, r_x, R):
+def y_est(x, y, beta_hat, r_x, R):
         # Pareil si a chaque fois qu'on a besoin de l'inverse de R
         # dans une formule on le recalcule le computationnal overhead
         # Va être énomre, il faut mieux le passer en paramètre de la
@@ -63,7 +55,9 @@ def y_est(x, y, beta_est, r_x, R):
     return y_est
 
 
-def y_est_gene(fx, rx, y, Rinv, F, beta_est):
+def y_est_bis(rx, y, Rinv, F, beta_est):
+    n = y.shape[1]
+    ones = np.ones((n, 1))
     rxt_Rinv = np.dot(rx.T, Rinv)
-    y_est = np.dot(fx.T, beta_est) + np.dot(rxt_Rinv, y - np.dot(F, beta_est))
+    y_est = beta_hat + np.dot(rxt_Rinv, y - beta_hat * ones)
     return y_est
