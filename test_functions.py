@@ -1,7 +1,7 @@
 import math
 
 
-def mystery_function(x1, x2):
+def mystery_func(x1, x2):
 	"""
     Test function for optimization
 
@@ -16,3 +16,13 @@ def mystery_function(x1, x2):
 	b = 2 * (2 - x2) * (2 - x2)
 	c = 7 * math.sin(0.5 * x1) * math.sin(0.7 * x1 * x2)
 	return 2 + a + b + c
+
+
+def mystery_func_vec(xvec):
+	"""
+	mystery function taking vector as input
+
+	Args:
+	    xvec (numpy.ndarray) : shape = (2, )
+	"""
+	return mystery_func(xvec[0], xvec[1])
