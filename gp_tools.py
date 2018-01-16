@@ -30,25 +30,43 @@ def kernel_mat(xmat, theta_vec, p):
     Compute correlation matrix for a set of 2d points
 
     Args:
-        xmat (numpy.ndarray) : must be of shape = (n, 2)
+        xmat (numpy.ndarray) : shape = (2, n)
 
     Returns:
         numpy.ndarray. The correlation matrix
     """
-    n = xmat.shape[0]
+    n = xmat.shape[1]
     R = np.zeros((n, n))
     # We use the symmetric structure to divide
     # the number of calls to corr_func_2d by 2
     for j in range(0, n):
         for i in range(j, n):
-            corr = kernel_func_2d(xmat[i, :], xmat[j, :], theta_vec, p)
+            corr = kernel_func_2d(xmat[:, i], xmat[:, j], theta_vec, p)
             R[i, j] = corr
             R[j, i] = corr
     return R
 
 
-#xtest = np.random.rand(100, 2)
-#theta_vec = [5, 5]
-#p = 1.5
-#R = kernel_mat(xtest, theta_vec, p)
-# print(R)
+def kernel_rx(xmat, xnew, theta_vec, p):
+	"""
+	Compute rx correlation vector for new data point
+
+	Args:
+		xmat (numpy.ndarray) : the data points, shape = (2, n), 
+		xnew (numpy.ndarray) : the new data vec, shape = (2, )
+	"""
+	n = xmat.shape[1]
+	rx = np.zeros((n, 1))
+	for i in range(0, n):
+		rx[i, 0] = kernel_func_2d(xmat[:, i], xnew, theta_vec, p)
+	return rx
+
+
+xtest = np.random.rand(2, 100)
+theta_vec = [5, 5]
+p = 1.5
+R = kernel_mat(xtest, theta_vec, p)
+print(R)
+xnew = np.random.rand(2)
+rx = kernel_rx(xtest, xnew, theta_vec, p)
+print(rx)
