@@ -44,7 +44,7 @@ def beta_est_bis(y, Rinv):
     #return beta_est
 
 
-def y_est(x, y, beta_hat, r_x, R):
+def y_est(x, y, beta_est, r_x, R):
         # Pareil si a chaque fois qu'on a besoin de l'inverse de R
         # dans une formule on le recalcule le computationnal overhead
         # Va être énomre, il faut mieux le passer en paramètre de la
@@ -55,7 +55,7 @@ def y_est(x, y, beta_hat, r_x, R):
     return y_est
 
 
-def y_est_bis(rx, y, Rinv, F, beta_est):
+def y_est_bis(rx, y, Rinv, F, beta_hat):
     n = y.shape[1]
     ones = np.ones((n, 1))
     rxt_Rinv = np.dot(rx.T, Rinv)
