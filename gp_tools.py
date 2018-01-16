@@ -61,12 +61,3 @@ def kernel_rx(xmat, xnew, theta_vec, p):
 		rx[i, 0] = kernel_func_2d(xmat[i, :], xnew, theta_vec, p)
 	return rx
 
-
-xtest = np.random.rand(100, 2)
-theta_vec = [5, 5]
-p = 1.5
-R = kernel_mat(xtest, theta_vec, p)
-print(R)
-xnew = np.random.rand(2)
-rx = kernel_rx(xtest, xnew, theta_vec, p)
-print(rx)

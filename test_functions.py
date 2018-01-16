@@ -1,7 +1,7 @@
 import math
 
 
-def mystery_func(x1, x2):
+def mystery(x1, x2):
 	"""
     Test function for optimization
 
@@ -18,11 +18,11 @@ def mystery_func(x1, x2):
 	return 2 + a + b + c
 
 
-def mystery_func_vec(xvec):
+def mystery_vec(xvec):
 	"""
 	mystery function taking vector as input
 
 	Args:
 	    xvec (numpy.ndarray) : shape = (2, )
 	"""
-	return mystery_func(xvec[0], xvec[1])
+	return mystery(xvec[0], xvec[1])

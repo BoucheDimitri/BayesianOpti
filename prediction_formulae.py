@@ -11,12 +11,12 @@ import cho_inv
 
 
 def beta_est(y, R):
-        # Tu inverses deux fois la matrice R alors que c'est une opération très couteuse (n^3)
+        # Tu inverses deux fois la matrice R alors que c'est une operation tres couteuse (n^3)
         # Mieux de le faire une fois et de la stocker
         # Cf la version beta_est_cho ci-dessous
         # Et tu n'utilises pas le cholesky_inv
     n = y.shape[1]
-    # Ca ne va pas marcher ici parce que numpy te créer un vecteur unidimensionnel
+    # Ca ne va pas marcher ici parce que numpy te creer un vecteur unidimensionnel
     # donc ca va merder dans le produit matriciel, il faut specifier un tuple
     # en shape
     ones = np.ones(n)
@@ -47,17 +47,21 @@ def beta_est_bis(y, Rinv):
 def y_est(x, y, beta_est, r_x, R):
         # Pareil si a chaque fois qu'on a besoin de l'inverse de R
         # dans une formule on le recalcule le computationnal overhead
-        # Va être énomre, il faut mieux le passer en paramètre de la
-        # Fonction comme ça on peut le faire qu'une fois par set de points de
-        # données
+        # Va etre enomre, il faut mieux le passer en parametre de la
+        # Fonction comme ca on peut le faire qu'une fois par set de points de
+        # donnees
+        #C'est quoi la fonction r ?
     n = y.shape[1]
     y_est = beta_est + r(x).T.dot(inv(R)).dot(y - np.ones(n))
     return y_est
 
 
-def y_est_bis(rx, y, Rinv, F, beta_hat):
+def y_est_bis(rx, y, Rinv, beta_hat):
     n = y.shape[1]
     ones = np.ones((n, 1))
     rxt_Rinv = np.dot(rx.T, Rinv)
     y_est = beta_hat + np.dot(rxt_Rinv, y - beta_hat * ones)
     return y_est
+
+
+
