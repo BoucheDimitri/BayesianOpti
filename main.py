@@ -10,9 +10,9 @@ import max_likelihood as max_llk
 
 #Test for gp_tools
 n = 100
-xtest = np.random.rand(n, 2)
-theta_vec = [5, 5]
-p = 1.5
+xtest = 5*np.random.rand(n, 2)
+theta_vec = [1, 1]
+p = 2
 R = gp_tools.kernel_mat(xtest, theta_vec, p)
 print(R)
 xnew = np.random.rand(2)
@@ -50,6 +50,9 @@ sigmle = max_llk.hat_sigmaz_sqr_mle(y, R, params)
 print(sigmle)
 llk = max_llk.log_likelihood(xtest, y, params)
 print(llk)
+xinit = np.array([100, 100, 1])
+opti = max_llk.max_log_likelihood(xtest, y, xinit)
+print(opti)
 
 
 
