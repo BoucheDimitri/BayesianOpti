@@ -26,13 +26,12 @@ def params_to_vec(params_vec):
 
 def hat_sigmaz_sqr_mle(y, R):
     """
-    Since R depends on theta and p, so does Rinv and beta estimate
-    We need to have hat_sigmaz as a function of theta and p for MLE
+	hat_sigmaz depending only on R and and doing the computations
+	for beta. Will be useful for Mle estimation
 
     Args :
     	y (numpy.ndarray) : shape = (n, 1)
     	R (numpy.ndarray) : Kernel matrix
-    	params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
 
 	Returns :
     	float. estimation of sigmaz_sqr
