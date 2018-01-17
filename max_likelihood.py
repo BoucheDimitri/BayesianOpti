@@ -14,10 +14,10 @@ def params_to_vec(params_vec):
     We stack them together to be able to use scipy optimization functions
 
     Args :
-    params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
+    	params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
 
     Returns :
-            tuple. (theta_vec, p_vec)
+         tuple. (theta_vec, p_vec)
     """
     theta_vec = params_vec[0:2]
     p_vec = params_vec[2:]
@@ -30,12 +30,12 @@ def hat_sigmaz_sqr_mle(y, R):
     We need to have hat_sigmaz as a function of theta and p for MLE
 
     Args :
-    y (numpy.ndarray) : shape = (n, 1)
-    R (numpy.ndarray) : Kernel matrix
-    params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
+    	y (numpy.ndarray) : shape = (n, 1)
+    	R (numpy.ndarray) : Kernel matrix
+    	params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
 
-Returns :
-    float. estimation of sigmaz_sqr
+	Returns :
+    	float. estimation of sigmaz_sqr
     """
     #Rinv = cho_inv.cholesky_inv(R)
     Rinv = np.linalg.inv(R)
@@ -48,12 +48,12 @@ def log_likelihood(xmat, y, params_vec):
     Log likelihood, params_vec = [theta_1, theta_2, p_1, p_2]
 
     Args :
-            xmat (numpy.ndarray) : shape = (n, 2)
-    y (numpy.ndarray) : shape = (n, 1)
-    params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
+        xmat (numpy.ndarray) : shape = (n, 2)
+    	y (numpy.ndarray) : shape = (n, 1)
+    	params_vec (numpy.ndarray) : shape = (4, ), [theta_1, theta_2, p_1, p_2]
 
-Returns :
-    float. log likelihood
+	Returns :
+    	float. log likelihood
     """
     theta_vec, p_vec = params_to_vec(params_vec)
     R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
@@ -71,12 +71,12 @@ def log_likelihood_fixedp(xmat, y, theta_vec):
     Log likelihood, params_vec = [theta_1, theta_2, p]
 
     Args :
-            xmat (numpy.ndarray) : shape = (n, 2)
-    y (numpy.ndarray) : shape = (n, 1)
-    params_vec (numpy.ndarray) : shape = (2, ) [theta_1, theta_2]
+        xmat (numpy.ndarray) : shape = (n, 2)
+    	y (numpy.ndarray) : shape = (n, 1)
+    	params_vec (numpy.ndarray) : shape = (2, ) [theta_1, theta_2]
 
-Returns :
-    float. log likelihood
+	Returns :
+    	float. log likelihood
     """
     p_vec = [1.0, 1.0]
     R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
