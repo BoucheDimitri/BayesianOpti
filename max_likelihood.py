@@ -20,11 +20,11 @@ def params_to_vec(params_vec):
 		tuple. (theta_vec, p)
 	"""
 	theta_vec = params_vec[0:2]
-	p = float(params_vec[2])
-	return theta_vec, p
+	p_vec = params_vec[2:]
+	return theta_vec, p_vec
 
 
-def hat_sigmaz_sqr_mle(y, R, params_vec):
+def hat_sigmaz_sqr_mle(y, R):
 	"""
 	Since R depends on theta and p, so does Rinv and beta estimate
 	We need to have hat_sigmaz as a function of theta and p for MLE
@@ -37,7 +37,6 @@ def hat_sigmaz_sqr_mle(y, R, params_vec):
     Returns :
     	float. estimation of sigmaz_sqr
 	"""
-	theta_vec, p = params_to_vec(params_vec)
 	#Rinv = cho_inv.cholesky_inv(R)
 	Rinv = np.linalg.inv(R)
 	hat_beta = pred.beta_est_bis(y, Rinv)
@@ -56,12 +55,36 @@ def log_likelihood(xmat, y, params_vec):
     Returns :
     	float. log likelihood
 	"""
-	theta_vec, p = params_to_vec(params_vec)
-	R = gp_tools.kernel_mat(xmat, theta_vec, p)
+	theta_vec, p_vec = params_to_vec(params_vec)
+	R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
 	n = R.shape[0]
 	Rinv = np.linalg.inv(R)
 	detR = np.linalg.det(R)
-	hat_sigz_sqr = hat_sigmaz_sqr_mle(y, R, params_vec)
+	hat_sigz_sqr = hat_sigmaz_sqr_mle(y, R)
+	print("sigma " + str(hat_sigz_sqr))
+	print("Det " + str(detR))
+	return - 0.5 * (n * math.log(hat_sigz_sqr) + math.log(detR))
+
+
+def log_likelihood_fixedp(xmat, y, theta_vec):
+	"""
+	Log likelihood, params_vec = [theta_1, theta_2, p]
+
+	Args :
+		xmat (numpy.ndarray) : shape = (n, 2)
+        y (numpy.ndarray) : shape = (n, 1)
+        params_vec (numpy.ndarray) : shape = (3, ), [theta_1, theta_2, p]
+
+    Returns :
+    	float. log likelihood
+	"""
+	p_vec = [1.0, 1.0]
+	R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
+	n = R.shape[0]
+	Rinv = np.linalg.inv(R)
+	detR = np.linalg.det(R)
+	hat_sigz_sqr = hat_sigmaz_sqr_mle(y, R)
+	print("Theta vec" + str(theta_vec))
 	print("sigma " + str(hat_sigz_sqr))
 	print("Det " + str(detR))
 	return - 0.5 * (n * math.log(hat_sigz_sqr) + math.log(detR))
@@ -70,7 +93,8 @@ def log_likelihood(xmat, y, params_vec):
 def max_log_likelihood(xmat, y, xinit):
 	#We have an issue with the determinant which gets very 
 	#very small to the point that a math domain error is raised
-	minus_llk_opti = lambda params : - log_likelihood(xmat, y, params)
+	minus_llk_opti = lambda params : - log_likelihood_fixedp(xmat, y, params)
+	#opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
 	opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
 	return opti
 
