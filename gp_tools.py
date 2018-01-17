@@ -14,8 +14,8 @@ def kernel_func_2d(xvec1, xvec2, theta_vec, p_vec):
     Args:
             xvec1 (numpy.ndarray) : first datapoint, shape = (2, )
             xvec2 (numpy.ndarray) : second datapoint, shape = (2, )
-            theta_vec (numpy.ndarray) : vector of theta params, shape = (2, )
-            p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (2, )
+            theta_vec (numpy.ndarray) : vector of theta params, one by dim, shape = (2, )
+            p_vec (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (2, )
 
     Returns:
             float. The 2d kernel correlation between xvec1 and xvec2
@@ -31,8 +31,8 @@ def kernel_mat(xmat, theta_vec, p_vec):
 
     Args:
         xmat (numpy.ndarray) : shape = (n, 2)
-        theta_vec (numpy.ndarray) : vector of theta params, shape = (2, )
-        p (float) : power used to compute the distance in the exp
+        theta_vec (numpy.ndarray) : vector of theta params, one by dim, shape = (2, )
+        p_vec (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (2, )
 
     Returns:
         numpy.ndarray. The correlation matrix
@@ -50,16 +50,17 @@ def kernel_mat(xmat, theta_vec, p_vec):
 
 
 def kernel_rx(xmat, xnew, theta_vec, p_vec):
-	"""
-	Compute rx correlation vector for new data point
+    """
+    Compute rx correlation vector for new data point
 
-	Args:
-		xmat (numpy.ndarray) : the data points, shape = (n, 2), 
-		xnew (numpy.ndarray) : the new data vec, shape = (2, )
-	"""
-	n = xmat.shape[0]
-	rx = np.zeros((n, 1))
-	for i in range(0, n):
-		rx[i, 0] = kernel_func_2d(xmat[i, :], xnew, theta_vec, p_vec)
-	return rx
-
+    Args:
+            xmat (numpy.ndarray) : the data points, shape = (n, 2),
+            xnew (numpy.ndarray) : the new data vec, shape = (2, )
+            theta_vec (numpy.ndarray) : vector of theta params, one by dim, shape = (2, )
+    p_vec (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (2, )
+    """
+    n = xmat.shape[0]
+    rx = np.zeros((n, 1))
+    for i in range(0, n):
+        rx[i, 0] = kernel_func_2d(xmat[i, :], xnew, theta_vec, p_vec)
+    return rx
