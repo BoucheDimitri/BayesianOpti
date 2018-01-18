@@ -81,3 +81,13 @@ def hat_sigmaz_sqr(y, Rinv, beta_hat):
     ones = np.ones((n, 1))
     err = y - beta_hat * ones
     return float((1.0 / float(n)) * np.dot(np.dot(err.T, Rinv), err))
+
+
+def sigma_est(y, rx, Rinv, beta_hat):
+    """
+    Uses approximation formula 3.16 and replace sigma_z by 
+    its MLE estimate from 3.17 to compute estimation of sigma
+    """
+    sigz_sqr = hat_sigmaz_sqr(y, Rinv, beta_hat)
+    rxt_Rinv_rx = float(np.dot(np.dot(rx.T, Rinv), rx))
+    return sigz_sqr * (1 - rxt_Rinv_rx)

@@ -94,5 +94,5 @@ def max_log_likelihood(xmat, y, xinit):
     # very small to the point that a math domain error is raised
     def minus_llk_opti(params): return - log_likelihood_fixedp(xmat, y, params)
     #opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
-    opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
+    opti = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
     return opti
