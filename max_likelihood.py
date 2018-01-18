@@ -42,6 +42,30 @@ def hat_sigmaz_sqr_mle(y, R):
     return pred.hat_sigmaz_sqr(y, Rinv, hat_beta)
 
 
+def log_likelihood_classic(xmat, y, params_vec):
+    """
+    Log likelihood, params_vec = [theta, p]
+
+    Args :
+        xmat (numpy.ndarray) : shape = (n, k)
+    	y (numpy.ndarray) : shape = (n, 1)
+    	params_vec (numpy.ndarray) : shape = (2, )
+
+	Returns :
+    	float. log likelihood
+    """
+    theta = params_vec[0]
+    p = params_vec[0]
+    R = gp_tools.kernel_mat_classic(xmat, theta_vec, p_vec)
+    n = R.shape[0]
+    Rinv = np.linalg.inv(R)
+    detR = np.linalg.det(R)
+    hat_sigz_sqr = hat_sigmaz_sqr_mle(y, R)
+    print("sigma " + str(hat_sigz_sqr))
+    print("Det " + str(detR))
+    return - 0.5 * (n * math.log(hat_sigz_sqr) + math.log(detR))
+
+
 def log_likelihood(xmat, y, params_vec):
     """
     Log likelihood, params_vec = [theta_1, theta_2, p_1, p_2]
@@ -55,7 +79,7 @@ def log_likelihood(xmat, y, params_vec):
     	float. log likelihood
     """
     theta_vec, p_vec = params_to_vec(params_vec)
-    R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
+    R = gp_tools.kernel_mat_2d(xmat, theta_vec, p_vec)
     n = R.shape[0]
     Rinv = np.linalg.inv(R)
     detR = np.linalg.det(R)
@@ -78,7 +102,7 @@ def log_likelihood_fixedp(xmat, y, theta_vec):
     	float. log likelihood
     """
     p_vec = [1.0, 1.0]
-    R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
+    R = gp_tools.kernel_mat_2d(xmat, theta_vec, p_vec)
     n = R.shape[0]
     Rinv = np.linalg.inv(R)
     detR = np.linalg.det(R)
@@ -93,6 +117,15 @@ def max_log_likelihood(xmat, y, xinit):
     # We have an issue with the determinant which gets very
     # very small to the point that a math domain error is raised
     def minus_llk_opti(params): return - log_likelihood_fixedp(xmat, y, params)
+    #opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
+    opti = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
+    return opti
+
+
+def max_log_likelihood_classic(xmat, y, xinit):
+    # We have an issue with the determinant which gets very
+    # very small to the point that a math domain error is raised
+    def minus_llk_opti(params): return - log_likelihood_classic(xmat, y, params)
     #opt = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
     opti = optimize.minimize(fun=minus_llk_opti, x0=xinit, method="L-BFGS-B")
     return opti
