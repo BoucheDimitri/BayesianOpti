@@ -16,7 +16,7 @@ def kernel_func_classic(xvec1, xvec2, theta, p):
 
 
 def kernel_mat_classic(xmat, theta, p):
-	n = xmat.shape[0]
+    n = xmat.shape[0]
     R = np.zeros((n, n))
     # We use the symmetric structure to divide
     # the number of calls to corr_func_2d by 2
@@ -82,7 +82,7 @@ def kernel_mat_2d_prod(xmat, theta_vec, p_vec):
     # the number of calls to corr_func_2d by 2
     for j in range(0, n):
         for i in range(j, n):
-            corr = kernel_func_2d(xmat[i, :], xmat[j, :], theta_vec, p_vec)
+            corr = kernel_func_2d_prod(xmat[i, :], xmat[j, :], theta_vec, p_vec)
             R[i, j] = corr
             R[j, i] = corr
     return R
@@ -101,5 +101,5 @@ def kernel_rx_2d_prod(xmat, xnew, theta_vec, p_vec):
     n = xmat.shape[0]
     rx = np.zeros((n, 1))
     for i in range(0, n):
-        rx[i, 0] = kernel_func_2d(xmat[i, :], xnew, theta_vec, p_vec)
+        rx[i, 0] = kernel_func_2d_prod(xmat[i, :], xnew, theta_vec, p_vec)
     return rx
