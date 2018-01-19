@@ -38,7 +38,7 @@ def hat_sigmaz_sqr_mle(y, R):
     """
     #Rinv = cho_inv.cholesky_inv(R)
     Rinv = np.linalg.inv(R)
-    hat_beta = pred.beta_est_bis(y, Rinv)
+    hat_beta = pred.beta_est(y, Rinv)
     return pred.hat_sigmaz_sqr(y, Rinv, hat_beta)
 
 

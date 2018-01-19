@@ -2,6 +2,7 @@ import math
 
 
 def mystery(x1, x2):
+    #could be good to add a little noise no?
 	"""
     Test function for optimization
 
@@ -26,3 +27,5 @@ def mystery_vec(xvec):
 	    xvec (numpy.ndarray) : shape = (2, )
 	"""
 	return mystery(xvec[0], xvec[1])
+
+# The global solution has a value of -1.4565 at x = [2.5044,2.5778]
