@@ -31,12 +31,13 @@ def bayesian_optimization(n, nb_it, p_vec, theta_vec, function2Bmin):
         R = gp_tools.kernel_mat_2d_prod(xtest, theta_vec, p_vec)
         Rinv = cho_inv.cholesky_inv(R)
         beta = pred.beta_est(y, Rinv)
-        xinit = xtest[np.argmin(y),]
+        xinit = 5*np.random.rand(1, 2)
         optiEI = af.max_EI(xtest, y, Rinv, beta, theta_vec, p_vec, xinit, function2Bmin)
         xnew = optiEI["x"].reshape(1,2)
-        ynew = optiEI["fun"].reshape(1,1)
+        ynew = np.array(function2Bmin(xnew.reshape(2,1))).reshape(1,1)
         xtest = np.concatenate((xtest, xnew), axis=0)
         y = np.concatenate((y, ynew))
+        print(it)
         
-    return min(y), xtest[np.argmin(y),]
+    return min(y), y, xtest[np.argmin(y),], xtest
     
