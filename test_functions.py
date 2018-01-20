@@ -1,7 +1,5 @@
 import math
 
-#f = 2 + 0.01(x2 −x2 1)2 + (1−x1)2 + 2(2−x2)2 + 7sin(0.5x1)sin(0.7x1x2) 
-#could be good to add a little noise no?
 
 def mystery(x1, x2):
     """

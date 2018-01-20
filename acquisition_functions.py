@@ -11,7 +11,7 @@ def fmin(y):
 def EI(xnew, xtest, y, Rinv, beta_hat, theta_vec, p_vec, function2Bmin):
     f_min = fmin(y)
     y_hat = function2Bmin(xnew)
-    rx = gp_tools.kernel_rx_2d_prod(xtest, xnew, theta_vec, p_vec)
+    rx = gp_tools.kernel_rx(xtest, xnew, theta_vec, p_vec)
     sigma_hat = math.sqrt(pred.sigma_est(y, rx, Rinv, beta_hat))
     if sigma_hat == 0:
         EI = 0

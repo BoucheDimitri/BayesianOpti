@@ -28,7 +28,7 @@ def bayesian_optimization(n, nb_it, p_vec, theta_vec, function2Bmin):
     
     for it in range(0,nb_it):
 
-        R = gp_tools.kernel_mat_2d_prod(xtest, theta_vec, p_vec)
+        R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
         Rinv = cho_inv.cholesky_inv(R)
         beta = pred.beta_est(y, Rinv)
         xinit = 5*np.random.rand(1, 2)

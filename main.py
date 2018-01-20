@@ -16,10 +16,10 @@ xtest = np.random.rand(n, 2)
 theta_vec = [1, 1]
 p_vec = [1, 1]
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
-R = gp_tools.kernel_mat_2d_prod(xtest, theta_vec, p_vec)
+R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
 print(R)
 xnew = np.random.rand(2)
-rx = gp_tools.kernel_rx_2d_prod(xtest, xnew, theta_vec, p_vec)
+rx = gp_tools.kernel_rx(xtest, xnew, theta_vec, p_vec)
 print(rx)
 image = test_func.mystery_vec(xnew)
 
