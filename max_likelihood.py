@@ -24,7 +24,7 @@ def params_to_vec(params_vec):
     return theta_vec, p_vec
 
 
-def hat_sigmaz_sqr_mle(y, R):
+def hat_sigmaz_sqr_mle(y, Rinv):
     """
 	hat_sigmaz depending only on R and and doing the computations
 	for beta. Will be useful for Mle estimation
@@ -37,7 +37,6 @@ def hat_sigmaz_sqr_mle(y, R):
     	float. estimation of sigmaz_sqr
     """
     #Rinv = cho_inv.cholesky_inv(R)
-    Rinv = np.linalg.inv(R)
     hat_beta = pred.beta_est(y, Rinv)
     return pred.hat_sigmaz_sqr(y, Rinv, hat_beta)
 
@@ -59,9 +58,9 @@ def log_likelihood(xmat, y, params_vec):
     print(theta_vec)
     R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
     n = R.shape[0]
-    Rinv = np.linalg.inv(R)
+    Rinv = cho_inv.cholesky_inv(R)
     detR = np.linalg.det(R)
-    hat_sigz_sqr = hat_sigmaz_sqr_mle(y, R)
+    hat_sigz_sqr = hat_sigmaz_sqr_mle(y, Rinv)
     print("Theta vec" + str(theta_vec))
     print("p_vec" + str(theta_vec))
     print("sigma " + str(hat_sigz_sqr))
