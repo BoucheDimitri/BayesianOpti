@@ -11,7 +11,7 @@ import math
 n = 100
 xtest = 5*np.random.rand(n, 2)
 theta_vec = np.array([1, 1])
-p_vec = np.array([1, 1])
+p_vec = np.array([0.5, 0.5])
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
 R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
 print(R)
@@ -53,8 +53,13 @@ sigmle = max_llk.hat_sigmaz_sqr_mle(y, R)
 print(sigmle)
 llk = max_llk.log_likelihood(xtest, y, params)
 print(llk)
-xinit = np.array([0.2, 0.2])
-opti = max_llk.max_log_likelihood(xtest, y, xinit)
+params_init = np.array([0.5, 0.5, 1.5, 1.5])
+#Upper and lower bounds for optimization
+#If fixed_p set to False, useful to avoid convergence to singular matrix leading to math errors
+mins_list = [None, None, 0, 0]
+maxs_list = [None, None, 1.99, 1.99]
+opti = max_llk.max_log_likelihood(xtest, y, params_init, fixed_p=True, mins_list=mins_list, maxs_list=maxs_list)
+print(type(opti))
 print(opti)
 
 
