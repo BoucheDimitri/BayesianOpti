@@ -1,7 +1,7 @@
 import numpy as np
 import cho_inv
 import prediction_formulae as pred 
-import gp_tools
+import exp_kernel
 import test_functions as test_func 
 import max_likelihood as max_llk
 import acquisition_functions as af
@@ -16,10 +16,10 @@ xtest = np.random.rand(n, 2)
 theta_vec = [1, 1]
 p_vec = [1, 1]
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
-R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
+R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
 print(R)
 xnew = np.random.rand(2)
-rx = gp_tools.kernel_rx(xtest, xnew, theta_vec, p_vec)
+rx = exp_kernel.kernel_rx(xtest, xnew, theta_vec, p_vec)
 print(rx)
 image = test_func.mystery_vec(xnew)
 
@@ -110,7 +110,7 @@ for i in range(0, n):
 
 for it in range(0,nb_it):
 
-    R = gp_tools.kernel_mat_2d_prod(xtest, theta_vec, p_vec)
+    R = exp_kernel.kernel_mat_2d_prod(xtest, theta_vec, p_vec)
     Rinv = cho_inv.cholesky_inv(R)
     beta = pred.beta_est(y, Rinv)
     xinit = 5*np.random.rand(1, 2)
@@ -129,7 +129,7 @@ af.max_EI(xtest, y, Rinv, beta, theta_vec, p_vec, xinit, test_func.mystery_vec)
 f_min = af.fmin(y)
 xnew = xtest[np.argmin(y),]
 y_hat = test_func.mystery_vec(xnew)
-rx = gp_tools.kernel_rx_2d_prod(xtest, xnew, theta_vec, p_vec)
+rx = exp_kernel.kernel_rx_2d_prod(xtest, xnew, theta_vec, p_vec)
 sigma_hat = math.sqrt(pred.sigma_est(y, rx, Rinv, beta))
 pred.sigma_est(y, rx, Rinv, beta) #gives negative value!!!
 sigz_sqr = pred.hat_sigmaz_sqr(y, Rinv, beta) #math error!!!

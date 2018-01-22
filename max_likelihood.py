@@ -1,11 +1,10 @@
 import math
 import numpy as np
-import scipy.linalg as linalg
 import scipy.optimize as optimize
 
 import prediction_formulae as pred
 import cho_inv
-import gp_tools
+import exp_kernel
 
 
 def params_to_vec(params_vec):
@@ -55,7 +54,7 @@ def log_likelihood(xmat, y, params_vec):
         float. log likelihood
     """
     theta_vec, p_vec = params_to_vec(params_vec)
-    R = gp_tools.kernel_mat(xmat, theta_vec, p_vec)
+    R = exp_kernel.kernel_mat(xmat, theta_vec, p_vec)
     n = R.shape[0]
     Rinv = cho_inv.cholesky_inv(R)
     detR = np.linalg.det(R)

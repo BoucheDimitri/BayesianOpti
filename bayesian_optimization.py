@@ -1,12 +1,16 @@
 import numpy as np
 import cho_inv
 import prediction_formulae as pred 
-import gp_tools
+import exp_kernel
 import test_functions as test_func 
 import max_likelihood as max_llk
 import acquisition_functions as af
 
 def bayesian_optimization(n, nb_it, p_vec, theta_vec, function2Bmin):
+
+    #Memes commentaires que pour EI, tu fais trop de choses en meme temps
+    #une fonction doit faire une seule chose sinon c est vraiment illisible
+    #pour quelqu un d autre que toi
     """
     Function for bayesian optimization with fixed p and theta
 
@@ -28,7 +32,7 @@ def bayesian_optimization(n, nb_it, p_vec, theta_vec, function2Bmin):
     
     for it in range(0,nb_it):
 
-        R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
+        R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
         Rinv = cho_inv.cholesky_inv(R)
         beta = pred.beta_est(y, Rinv)
         xinit = 5*np.random.rand(1, 2)

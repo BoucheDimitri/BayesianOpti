@@ -1,6 +1,6 @@
 import numpy as np
 import cho_inv
-import gp_tools
+import exp_kernel
 import test_functions as test_func 
 import max_likelihood as max_llk
 import prediction_formulae as pred 
@@ -13,10 +13,10 @@ xtest = 5*np.random.rand(n, 2)
 theta_vec = np.array([1, 1])
 p_vec = np.array([0.5, 0.5])
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
-R = gp_tools.kernel_mat(xtest, theta_vec, p_vec)
+R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
 print(R)
 xnew = np.random.rand(2)
-rx = gp_tools.kernel_rx(xtest, xnew, theta_vec, p_vec)
+rx = exp_kernel.kernel_rx(xtest, xnew, theta_vec, p_vec)
 print(rx)
 image = test_func.mystery_vec(xnew)
 
@@ -58,9 +58,8 @@ params_init = np.array([0.5, 0.5, 1.5, 1.5])
 #If fixed_p set to False, useful to avoid convergence to singular matrix leading to math errors
 mins_list = [None, None, 0, 0]
 maxs_list = [None, None, 1.99, 1.99]
-opti = max_llk.max_log_likelihood(xtest, y, params_init, fixed_p=True, mins_list=mins_list, maxs_list=maxs_list)
-print(type(opti))
-print(opti)
+mle_opti = max_llk.max_log_likelihood(xtest, y, params_init, fixed_p=True, mins_list=mins_list, maxs_list=maxs_list)
+print(mle_opti)
 
 
 #Test for mle
