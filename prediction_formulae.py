@@ -38,7 +38,7 @@ def hat_sigmaz_sqr(y, Rinv, beta_hat):
     return float((1.0 / float(n)) * np.dot(np.dot(err.T, Rinv), err))
 
 
-def sigma_est(y, rx, Rinv, beta_hat):
+def sigma_sqr_est(y, rx, Rinv, beta_hat):
     """
     Uses approximation formula 3.16 and replace sigma_z by 
     its MLE estimate from 3.17 to compute estimation of sigma

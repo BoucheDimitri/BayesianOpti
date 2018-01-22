@@ -12,25 +12,26 @@ def fmin(y):
 
 
 def EI(xnew, xtest, y, Rinv, beta_hat, theta_vec, p_vec, function2Bmin):
-        # Tu veux tout faire en meme temps mais c est pas une bonne idee,
-        # il faut que tu puisses dire ce que fait chaque fonction exactement
-        # La il y a des trucs que tu prends en argument, d'autres que tu recalcules,
-        # Au final le role de la fonction est pas claire et c'est pas modulaire du tout
-        # donc difficile a comprendre et a reutiliser
+
+        # Si on prend ta logique de code, on va devoir recoder toutes les
+        # Fonctions pour chaque fonction d'acquisition, clairement sous optimal
+        # Cf mon fichier acquisition max
+        # Reprend sa logique quand tu t'y remettras
 
     f_min = fmin(y)
 
-        # Ici ce n'est pas la bonne formule pour y_hat puisque
-        # meme si ce n'est pas vraiment le cas ici, l'article traite
-        # de la minimization de "expensive" functions
-        # Donc c'est un peu de la triche d'evaluer la fonction
-        # A chaque nouveau point que l'on se propose...
-        # Le role de l'expected improvement est justement de savoir ou on
-        # va evaluer la fonction...
-        # Donc il faut reprendre la formule de l'article pour l'estimation de y(xnew)
+    # Ici ce n'est pas la bonne formule pour y_hat puisque
+    # meme si ce n'est pas vraiment le cas ici, l'article traite
+    # de la minimization de "expensive" functions
+    # Donc c'est un peu de la triche d'evaluer la fonction
+    # A chaque nouveau point que l'on se propose...
+    # Le role de l'expected improvement est justement de savoir ou on
+    # va evaluer la fonction pour eviter l'evaluation explicite
+    # Donc il faut reprendre la formule de l'article pour l'estimation de
+    # y(xnew)
     y_hat = function2Bmin(xnew)
     rx = exp_kernel.kernel_rx(xtest, xnew, theta_vec, p_vec)
-    sigma_hat = math.sqrt(pred.sigma_est(y, rx, Rinv, beta_hat))
+    sigma_hat = math.sqrt(pred.sigma_sqr_est(y, rx, Rinv, beta_hat))
     if sigma_hat == 0:
         EI = 0
     else:
@@ -53,6 +54,7 @@ def max_EI(xtest, y, Rinv, beta_hat, theta_vec, p_vec, xinit, function2Bmin):
 
     # D'autre part avec cette logique de code on va devoir reecrire toutes les fonctions
     # Pour chacune des fonctions d'acquisition ce qui est plutot sous optimal
+    # Cf mon fichier acquisition_max et les fonction d'acquisition ci-apres
     def minus_EI(xnew): return float(-EI(xnew, xtest, y, Rinv,
                                          beta_hat, theta_vec, p_vec, function2Bmin))
     opti = optimize.minimize(
@@ -66,7 +68,10 @@ def expected_improvement(hat_y, hat_sigma, xi, fmin):
         return 0.0
     else:
         z = (fmin - hat_y - xi) / hat_sigma
-        return (fmin - hat_y - xi) * stats.norm.cdf(z) + hat_sigma * stats.norm.pdf(z)
+        value = (fmin - hat_y - xi) * stats.norm.cdf(z) + \
+            hat_sigma * stats.norm.pdf(z)
+        print(value)
+        return value
 
 
 def lower_confidence_bound(hat_y, hat_sigma, xi):
@@ -74,6 +79,8 @@ def lower_confidence_bound(hat_y, hat_sigma, xi):
 
 
 def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
+    # Generalized expected improvement, runs
+    # But obviously erroneous results
     if hat_sigma == 0:
         return 0.0
     else:
@@ -85,11 +92,13 @@ def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
             if k / 2 == 0:
                 s += misc.comb(g, k) * np.power(z, g - k) * t0
                 if k != 0:
-                    t0 = - stats.norm.pdf(z) * np.power(z, k - 1) + (k - 1) * t0
+                    t0 = - stats.norm.pdf(z) * \
+                        np.power(z, k - 1) + (k - 1) * t0
             else:
                 s -= misc.comb(g, k) * np.power(z, g - k) * t1
                 if k != 1:
-                    t1 = - stats.norm.pdf(z) * np.power(z, k - 1) + (k - 1) * t1
+                    t1 = - stats.norm.pdf(z) * \
+                        np.power(z, k - 1) + (k - 1) * t1
     return np.power(hat_sigma, g) * s
 
 
@@ -98,4 +107,3 @@ acq_funcs_dic = dict()
 acq_funcs_dic["EI"] = expected_improvement
 acq_funcs_dic["LCB"] = lower_confidence_bound
 acq_funcs_dic["GEI"] = g_expected_improvement
-

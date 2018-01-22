@@ -45,7 +45,7 @@ y_hat = pred.y_est(rx, y, Rinv, beta)
 print(y_hat)
 sighat = pred.hat_sigmaz_sqr(y, Rinv, beta)
 print(sighat)
-sigma_sq_pred = pred.sigma_est(y, rx, Rinv, beta)
+sigma_sq_pred = pred.sigma_sqr_est(y, rx, Rinv, beta)
 print(sigma_sq_pred)
 
 #Test for mle
@@ -77,7 +77,7 @@ print(opti)
 #test for acquisition_functions
 f_min = af.fmin(y)
 print(f_min)
-print(pred.sigma_est(y, rx, Rinv, beta))
+print(pred.sigma_sqr_est(y, rx, Rinv, beta))
 print(test_func.mystery_vec(xnew))
 ExpImp = af.EI(xnew, xtest, y, Rinv, beta, theta_vec, p_vec, test_func.mystery_vec)
 type(ExpImp)
@@ -130,8 +130,8 @@ f_min = af.fmin(y)
 xnew = xtest[np.argmin(y),]
 y_hat = test_func.mystery_vec(xnew)
 rx = exp_kernel.kernel_rx_2d_prod(xtest, xnew, theta_vec, p_vec)
-sigma_hat = math.sqrt(pred.sigma_est(y, rx, Rinv, beta))
-pred.sigma_est(y, rx, Rinv, beta) #gives negative value!!!
+sigma_hat = math.sqrt(pred.sigma_sqr_est(y, rx, Rinv, beta))
+pred.sigma_sqr_est(y, rx, Rinv, beta)  #gives negative value!!!
 sigz_sqr = pred.hat_sigmaz_sqr(y, Rinv, beta) #math error!!!
 rxt_Rinv_rx = float(np.dot(np.dot(rx.T, Rinv), rx)) #bigger than one!!!
 sigz_sqr * (1 - rxt_Rinv_rx) #negative value!!!
