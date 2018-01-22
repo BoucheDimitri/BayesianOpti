@@ -16,7 +16,17 @@ def EI(xnew, xtest, y, Rinv, beta_hat, theta_vec, p_vec, function2Bmin):
         # La il y a des trucs que tu prends en argument, d'autres que tu recalcules,
         # Au final le role de la fonction est pas claire et c'est pas modulaire du tout
         # donc difficile a comprendre et a reutiliser
+
     f_min = fmin(y)
+
+        # Ici ce n'est pas la bonne formule pour y_hat puisque
+        # meme si ce n'est pas vraiment le cas ici, l'article traite
+        # de la minimization de "expensive" functions
+        # Donc c'est un peu de la triche d'evaluer la fonction
+        # A chaque nouveau point que l'on se propose...
+        # Le role de l'expected improvement est justement de savoir ou on
+        # va evaluer la fonction...
+        # Donc il faut reprendre la formule de l'article pour l'estimation de y(xnew)
     y_hat = function2Bmin(xnew)
     rx = exp_kernel.kernel_rx(xtest, xnew, theta_vec, p_vec)
     sigma_hat = math.sqrt(pred.sigma_est(y, rx, Rinv, beta_hat))
@@ -47,9 +57,14 @@ def max_EI(xtest, y, Rinv, beta_hat, theta_vec, p_vec, xinit, function2Bmin):
     return opti
 
 
-def expected_improv(y, fmin, sigma):
+def expected_improv(y, sigma, xi, fmin):
     if sigma == 0:
         return 0.0
     else:
-        z = (fmin - y) / sigma
-        return (fmin - y) * stats.norm.cdf(z) + sigma * stats.norm.pdf(z)
+        z = (fmin - y - xi) / sigma
+        return (fmin - y - xi) * stats.norm.cdf(z) + sigma * stats.norm.pdf(z)
+
+
+def lower_conf_bound(y, sigma, xi):
+    return y - xi * sigma
+
