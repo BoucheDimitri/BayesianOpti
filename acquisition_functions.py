@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.misc as misc
 import math
 import scipy.stats as stats
 import scipy.optimize as optimize
@@ -46,9 +47,12 @@ def max_EI(xtest, y, Rinv, beta_hat, theta_vec, p_vec, xinit, function2Bmin):
     # scalar
 
     # A priori n a pas sa place dans ce fichier, on veut regrouper toutes les fonctions d'acquisition
-    # sous une forme unifiee pour pouvoir en changer facilement dans le reste du programme
+    # sous une forme "unifiee" pour pouvoir en changer facilement dans le reste du programme
     # Donc ce fichier ne doit contenir que des fonctions d'acquisition
     # On fera un fichier separe pour l'optimisation des fonctions d'acquisition
+
+    # D'autre part avec cette logique de code on va devoir reecrire toutes les fonctions
+    # Pour chacune des fonctions d'acquisition ce qui est plutot sous optimal
     def minus_EI(xnew): return float(-EI(xnew, xtest, y, Rinv,
                                          beta_hat, theta_vec, p_vec, function2Bmin))
     opti = optimize.minimize(
@@ -57,14 +61,41 @@ def max_EI(xtest, y, Rinv, beta_hat, theta_vec, p_vec, xinit, function2Bmin):
     return opti
 
 
-def expected_improv(y, sigma, xi, fmin):
-    if sigma == 0:
+def expected_improvement(hat_y, hat_sigma, xi, fmin):
+    if hat_sigma == 0:
         return 0.0
     else:
-        z = (fmin - y - xi) / sigma
-        return (fmin - y - xi) * stats.norm.cdf(z) + sigma * stats.norm.pdf(z)
+        z = (fmin - hat_y - xi) / hat_sigma
+        return (fmin - hat_y - xi) * stats.norm.cdf(z) + hat_sigma * stats.norm.pdf(z)
 
 
-def lower_conf_bound(y, sigma, xi):
-    return y - xi * sigma
+def lower_confidence_bound(hat_y, hat_sigma, xi):
+    return hat_y - xi * hat_sigma
+
+
+def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
+    if hat_sigma == 0:
+        return 0.0
+    else:
+        z = (fmin - hat_y - xi) / hat_sigma
+        t0 = stats.norm.cdf(z)
+        t1 = - stats.norm.pdf(z)
+        s = 0
+        for k in range(0, g):
+            if k / 2 == 0:
+                s += misc.comb(g, k) * np.power(z, g - k) * t0
+                if k != 0:
+                    t0 = - stats.norm.pdf(z) * np.power(z, k - 1) + (k - 1) * t0
+            else:
+                s -= misc.comb(g, k) * np.power(z, g - k) * t1
+                if k != 1:
+                    t1 = - stats.norm.pdf(z) * np.power(z, k - 1) + (k - 1) * t1
+    return np.power(hat_sigma, g) * s
+
+
+# Dictionnary of acquisition functions
+acq_funcs_dic = dict()
+acq_funcs_dic["EI"] = expected_improvement
+acq_funcs_dic["LCB"] = lower_confidence_bound
+acq_funcs_dic["GEI"] = g_expected_improvement
 
