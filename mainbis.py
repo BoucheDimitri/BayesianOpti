@@ -108,6 +108,6 @@ opt = am.max_acq_func(
     xnew,
     bounds=None,
     xi=0,
-    func_key="LCB",
+    func_key="EI",
     g=None)
 print(opt)

@@ -16,7 +16,7 @@ def acq_func(
         p,
         xi=0,
         func_key="EI",
-        g=None):
+        **kwargs):
     """
     Generate acquisition function for optimization with possibility
     to change easily of acquisition function
@@ -31,7 +31,7 @@ def acq_func(
         p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
         xi (float) : Tradeoff parameter between exploration and exploitation
         func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
-        g (int) : g parameter for "GEI", relevant only when func_key = "GEI"
+        kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
 
     Returns:
         float. Value of acquisition function
@@ -49,6 +49,10 @@ def acq_func(
         return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi, fmin)
     elif func_key == "GEI":
         fmin = np.min(y)
+        if "g" not in kwargs.keys():
+            g = 1
+        else:
+            g = kwargs["g"]
         return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi, fmin, g)
     elif func_key == "LCB":
         return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi)
@@ -65,10 +69,10 @@ def max_acq_func(
         bounds=None,
         xi=0,
         func_key="EI",
-        g=None):
+        **kwargs):
     def minus_acq_fun(xnew):
         return float(-acq_func(xmat, xnew, y, Rinv,
-                               beta_hat, theta, p, xi, func_key, g))
+                               beta_hat, theta, p, xi, func_key, **kwargs))
     opti = optimize.minimize(
         fun=minus_acq_fun,
         x0=xinit,

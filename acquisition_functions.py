@@ -78,6 +78,11 @@ def lower_confidence_bound(hat_y, hat_sigma, xi):
     return hat_y - xi * hat_sigma
 
 
+def bandit_lower_confidence_bound(hat_y, hat_sigma, xi, delta, t, d):
+    tau_t = 2 * np.log(np.power(float(d)/2.0 + 2, t) * np.power(np.pi, 2) / (3 * delta))
+    return hat_y - np.sqrt(xi * tau_t) * hat_sigma
+
+
 def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
     # Generalized expected improvement, runs
     # But obviously erroneous results
