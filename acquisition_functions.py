@@ -71,16 +71,16 @@ def expected_improvement(hat_y, hat_sigma, xi, fmin):
         value = (fmin - hat_y - xi) * stats.norm.cdf(z) + \
             hat_sigma * stats.norm.pdf(z)
         print(value)
-        return value
+        return max(0, value)
 
 
 def lower_confidence_bound(hat_y, hat_sigma, xi):
-    return hat_y - xi * hat_sigma
+    return max(0, hat_y - xi * hat_sigma)
 
 
 def bandit_lower_confidence_bound(hat_y, hat_sigma, xi, delta, t, d):
     tau_t = 2 * np.log(np.power(float(d)/2.0 + 2, t) * np.power(np.pi, 2) / (3 * delta))
-    return hat_y - np.sqrt(xi * tau_t) * hat_sigma
+    return max(0, hat_y - np.sqrt(xi * tau_t) * hat_sigma)
 
 
 def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
@@ -104,7 +104,7 @@ def g_expected_improvement(hat_y, hat_sigma, xi, fmin, g):
                 if k != 1:
                     t1 = - stats.norm.pdf(z) * \
                         np.power(z, k - 1) + (k - 1) * t1
-    return np.power(hat_sigma, g) * s
+    return max(0, np.power(hat_sigma, g) * s)
 
 
 # Dictionnary of acquisition functions
