@@ -64,6 +64,23 @@ def bayesian_search(xmat,
                     xi=0,
                     func_key="EI",
                     **kwargs):
+    """
+    Search best point to sample by maximizing acquisition function
+
+    Args:
+        xmat (numpy.ndarray) : the data points so far, shape = (n, k)
+        y (numpy.ndarray) : y, shape=(n, 1)
+        theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
+        p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
+        xinit (numpy.ndarray) : initial value for acquisition maximization, shape = (k, )
+        bounds (tuple) : bounds for acquisition maximization in scipy
+        xi (float) : Tradeoff parameter between exploration and exploitation
+        func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
+        kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
+
+    Returns:
+        numpy.ndarray. The new point to sample from given the data so far
+    """
     R = exp_kernel.kernel_mat(xmat, theta, p)
     Rinv = cho_inv.cholesky_inv(R)
     beta_hat = pred.beta_est(y, Rinv)
@@ -80,3 +97,22 @@ def bayesian_search(xmat,
                                   **kwargs)
     best_xnew = opti_result.x
     return best_xnew
+
+
+def evaluate_add(xmat, xnew, y, test_func_key="Mystery"):
+    """
+    Once point to sample from is chosen, this function evaluate
+    the function at that point and update xmat and y to incorporate it
+
+    Args:
+        xmat (numpy.ndarray) : the data points so far, shape = (n, k)
+        y (numpy.ndarray) : y, shape=(n, 1)
+        test_func_key (str) : key of function that we are trying to minimize
+
+    Returns:
+         tuple. xmat expanded, y expanded
+    """
+    xmat = np.concatenate((xmat, xnew))
+    ynew = np.array([test_func.funcs_dic[test_func_key](xnew)])
+    y = np.concatenate((y, ynew))
+    return xmat, y
