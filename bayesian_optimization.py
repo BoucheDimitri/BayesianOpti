@@ -62,7 +62,7 @@ def bayesian_search(xmat,
                     xinit,
                     bounds=None,
                     xi=0,
-                    func_key="EI",
+                    acq_func_key="EI",
                     **kwargs):
     """
     Search best point to sample by maximizing acquisition function
@@ -75,7 +75,7 @@ def bayesian_search(xmat,
         xinit (numpy.ndarray) : initial value for acquisition maximization, shape = (k, )
         bounds (tuple) : bounds for acquisition maximization in scipy
         xi (float) : Tradeoff parameter between exploration and exploitation
-        func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
+        acq_func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
         kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
 
     Returns:
@@ -93,9 +93,10 @@ def bayesian_search(xmat,
                                   xinit,
                                   bounds,
                                   xi,
-                                  func_key=func_key,
+                                  acq_func_key=acq_func_key,
                                   **kwargs)
     best_xnew = opti_result.x
+    print(best_xnew.shape)
     return best_xnew
 
 
@@ -112,7 +113,47 @@ def evaluate_add(xmat, xnew, y, test_func_key="Mystery"):
     Returns:
          tuple. xmat expanded, y expanded
     """
-    xmat = np.concatenate((xmat, xnew))
     ynew = np.array([test_func.funcs_dic[test_func_key](xnew)])
+    ynew = ynew.reshape((1, 1))
     y = np.concatenate((y, ynew))
+    k = xmat.shape[1]
+    xnew = xnew.reshape(1, k)
+    xmat = np.concatenate((xmat, xnew))
+    return xmat, y
+
+
+def x_init_indounds(bounds):
+    k = len(bounds)
+    xinit = np.zeros((k, ))
+    for b in range(0, k):
+        xinit[b] = np.random.uniform(bounds[b][0], bounds[b][1])
+    return xinit
+
+
+def bayesian_opti(xmat,
+                  y,
+                  n_it,
+                  theta,
+                  p,
+                  bounds=None,
+                  xi=0,
+                  acq_func_key="EI",
+                  test_func_key="Mystery",
+                  **kwargs):
+    k = xmat.shape[1]
+    for i in range(0, n_it):
+        if bounds:
+            xinit = x_init_indounds(bounds)
+        else:
+            xinit = np.random.rand(k)
+        xnew = bayesian_search(xmat,
+                               y,
+                               theta,
+                               p,
+                               xinit,
+                               bounds=bounds,
+                               xi=xi,
+                               acq_func_key=acq_func_key,
+                               **kwargs)
+        xmat, y = evaluate_add(xmat, xnew, y, test_func_key=test_func_key)
     return xmat, y

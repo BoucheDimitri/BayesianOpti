@@ -70,7 +70,7 @@ def expected_improvement(hat_y, hat_sigma, xi, fmin):
         z = (fmin - hat_y - xi) / hat_sigma
         value = (fmin - hat_y - xi) * stats.norm.cdf(z) + \
             hat_sigma * stats.norm.pdf(z)
-        print(value)
+        #print(value)
         return max(0, value)
 
 

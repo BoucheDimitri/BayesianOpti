@@ -15,7 +15,7 @@ def acq_func(
         theta,
         p,
         xi=0,
-        func_key="EI",
+        acq_func_key="EI",
         **kwargs):
     """
     Generate acquisition function for optimization with possibility
@@ -30,7 +30,7 @@ def acq_func(
         theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
         p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
         xi (float) : Tradeoff parameter between exploration and exploitation
-        func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
+        acq_func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
         kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
 
     Returns:
@@ -39,23 +39,20 @@ def acq_func(
     rx = exp_kernel.kernel_rx(xmat, xnew, theta, p)
     hat_y = pred.y_est(rx, y, Rinv, beta_hat)
     hat_sigma = np.power(pred.sigma_sqr_est(y, rx, Rinv, beta_hat), 0.5)
-    # On pourrait trouver mieux mais vu qu'on va avoir au maximum 5
-    # fonction d'acquisition differentes, la liste de conditions reste
-    # une solution simple et acceptable
-    print("xnew")
-    print(xnew)
-    if func_key == "EI":
+    # print("xnew")
+    # print(xnew)
+    if acq_func_key == "EI":
         fmin = np.min(y)
-        return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi, fmin)
-    elif func_key == "GEI":
+        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi, fmin)
+    elif acq_func_key == "GEI":
         fmin = np.min(y)
         if "g" not in kwargs.keys():
             g = 1
         else:
             g = kwargs["g"]
-        return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi, fmin, g)
-    elif func_key == "LCB":
-        return af.acq_funcs_dic[func_key](hat_y, hat_sigma, xi)
+        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi, fmin, g)
+    elif acq_func_key == "LCB":
+        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi)
 
 
 def max_acq_func(
@@ -68,11 +65,11 @@ def max_acq_func(
         xinit,
         bounds=None,
         xi=0,
-        func_key="EI",
+        acq_func_key="EI",
         **kwargs):
     def minus_acq_fun(xnew):
         return float(-acq_func(xmat, xnew, y, Rinv,
-                               beta_hat, theta, p, xi, func_key, **kwargs))
+                               beta_hat, theta, p, xi, acq_func_key, **kwargs))
     opti = optimize.minimize(
         fun=minus_acq_fun,
         x0=xinit,
