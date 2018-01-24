@@ -7,6 +7,10 @@ import prediction_formulae as pred
 import exp_kernel
 
 
+#TODO: BEWARE, DEPRECATED AT THE BENEFIT OF AcqFuncs.py
+
+
+
 def fmin(y):
     return min(y)
 

@@ -15,10 +15,17 @@ class ExpImpr:
         self.fmin = fmin
         self.xi = xi
         self.name = "EI"
+        #Should acquisition be maximized of minimized
         self.opti_way = "max"
         self.bounds = bounds
 
     def set_fmin(self, fmin):
+        """
+        Change fmin stored parameter
+
+        Args :
+            fmin (float)
+        """
         self.fmin = fmin
 
     def set_bounds(self, bounds):
@@ -37,6 +44,7 @@ class LowConfBound:
 
     def __init__(self, eta=2):
         self.eta = eta
+        #In minimization case, LCB should be minimized not maximized
         self.opti_way = "min"
         self.name = "LCB"
 

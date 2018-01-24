@@ -95,13 +95,13 @@ def bayesian_search(xmat,
 
 def evaluate_add(xmat, xnew, y, objective_func):
     """
-    Once point to sample from is chosen, this function evaluate
-    the function at that point and update xmat and y to incorporate it
+    Once the point to sample from is chosen, this function evaluate
+    the objective function at that point and update xmat and y to incorporate the new point
 
     Args:
         xmat (numpy.ndarray) : the data points so far, shape = (n, k)
         y (numpy.ndarray) : y, shape=(n, 1)
-        test_func_key (str) : key of function that we are trying to minimize
+        objective_func (function) : function to minimize
 
     Returns:
          tuple. xmat expanded, y expanded
@@ -116,6 +116,15 @@ def evaluate_add(xmat, xnew, y, objective_func):
 
 
 def x_init_indounds(bounds):
+    """
+    Random initialization of xinit within given bounds
+
+    Args :
+        bounds (tuple) : bounds, for instance in 2d : ((min_d1, min_d2), (max_d1, max_d2))
+
+    Returns:
+        numpy.ndarray. The random point for initialization within bounds
+    """
     k = len(bounds)
     xinit = np.zeros((k, ))
     for b in range(0, k):
@@ -131,6 +140,21 @@ def bayesian_opti(xmat,
                   acq_func,
                   objective_func,
                   bounds=None):
+    """
+    Perform iterations of bayesian optimization
+
+    Args:
+        xmat (numpy.ndarray) : the data points so far, shape = (n, k)
+        y (numpy.ndarray) : y, shape=(n, 1)
+        theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
+        p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
+        acq_func : Instance of one of the classes in Acquisition_Functions.py file
+        objective_func (function) : the objective function
+        bounds (tuple) : bounds for acquisition maximization in scipy
+
+    Returns:
+        numpy.ndarray. The new point to sample from given the data so far
+    """
     k = xmat.shape[1]
     for i in range(0, n_it):
         if bounds:
