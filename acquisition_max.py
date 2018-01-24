@@ -1,12 +1,11 @@
 import numpy as np
 import scipy.optimize as optimize
 
-import acquisition_functions as af
 import exp_kernel
 import prediction_formulae as pred
 
 
-def acq_func(
+def complete_acq_func(
         xmat,
         xnew,
         y,
@@ -14,9 +13,7 @@ def acq_func(
         beta_hat,
         theta,
         p,
-        xi=0,
-        acq_func_key="EI",
-        **kwargs):
+        acq_func):
     """
     Generate acquisition function for optimization with possibility
     to change easily of acquisition function
@@ -29,33 +26,23 @@ def acq_func(
         beta_hat(float) : estimation of beta on the data of xmat
         theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
         p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
-        xi (float) : Tradeoff parameter between exploration and exploitation
-        acq_func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
-        kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
+        acq_func : Instance of one of the classes in Acquisition_Functions.py file
 
     Returns:
-        float. Value of acquisition function
+        scipy.optimize.optimize.OptimizeResult. The result of optimization
     """
     rx = exp_kernel.kernel_rx(xmat, xnew, theta, p)
     hat_y = pred.y_est(rx, y, Rinv, beta_hat)
     hat_sigma = np.power(pred.sigma_sqr_est(y, rx, Rinv, beta_hat), 0.5)
     # print("xnew")
     # print(xnew)
-    if acq_func_key == "EI":
+    if acq_func.name == "EI":
         fmin = np.min(y)
-        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi, fmin)
-    elif acq_func_key == "GEI":
-        fmin = np.min(y)
-        if "g" not in kwargs.keys():
-            g = 1
-        else:
-            g = kwargs["g"]
-        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi, fmin, g)
-    elif acq_func_key == "LCB":
-        return af.acq_funcs_dic[acq_func_key](hat_y, hat_sigma, xi)
+        acq_func.set_fmin(fmin)
+    return acq_func.evaluate(hat_y, hat_sigma)
 
 
-def max_acq_func(
+def opti_acq_func(
         xmat,
         y,
         Rinv,
@@ -63,15 +50,32 @@ def max_acq_func(
         theta,
         p,
         xinit,
-        bounds=None,
-        xi=0,
-        acq_func_key="EI",
-        **kwargs):
-    def minus_acq_fun(xnew):
-        return float(-acq_func(xmat, xnew, y, Rinv,
-                               beta_hat, theta, p, xi, acq_func_key, **kwargs))
+        acq_func,
+        bounds=None):
+    """
+    Optimize acquisition function
+
+    Args:
+        xmat (numpy.ndarray) : the data points, shape = (n, k)
+        y (numpy.ndarray) : y, shape=(n, 1)
+        Rinv (numpy.ndarray) : Inverse of R, shape=(n, n)
+        beta_hat(float) : estimation of beta on the data of xmat
+        theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
+        p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
+        xinit (numupy.ndarray) : shape=(k, ), where to start optimization
+        acq_func : Instance of one of the classes in Acquisition_Functions.py file
+
+    Returns:
+
+    """
+    def to_optimize(xnew):
+        if acq_func.opti_way == "max":
+            opti_sign = -1
+        else:
+            opti_sign = 1
+        return float(opti_sign * complete_acq_func(xmat, xnew, y, Rinv, beta_hat, theta, p, acq_func))
     opti = optimize.minimize(
-        fun=minus_acq_fun,
+        fun=to_optimize,
         x0=xinit,
         bounds=bounds,
         method='SLSQP')
