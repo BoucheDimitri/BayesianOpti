@@ -93,7 +93,7 @@ def bayesian_search(xmat,
     return best_xnew
 
 
-def evaluate_add(xmat, xnew, y, test_func_key="Mystery"):
+def evaluate_add(xmat, xnew, y, objective_func):
     """
     Once point to sample from is chosen, this function evaluate
     the function at that point and update xmat and y to incorporate it
@@ -106,7 +106,7 @@ def evaluate_add(xmat, xnew, y, test_func_key="Mystery"):
     Returns:
          tuple. xmat expanded, y expanded
     """
-    ynew = np.array([test_func.funcs_dic[test_func_key](xnew)])
+    ynew = np.array([objective_func(xnew)])
     ynew = ynew.reshape((1, 1))
     y = np.concatenate((y, ynew))
     k = xmat.shape[1]
@@ -128,11 +128,9 @@ def bayesian_opti(xmat,
                   n_it,
                   theta,
                   p,
-                  bounds=None,
-                  xi=0,
-                  acq_func_key="EI",
-                  test_func_key="Mystery",
-                  **kwargs):
+                  acq_func,
+                  objective_func,
+                  bounds=None):
     k = xmat.shape[1]
     for i in range(0, n_it):
         if bounds:
@@ -144,9 +142,7 @@ def bayesian_opti(xmat,
                                theta,
                                p,
                                xinit,
-                               bounds=bounds,
-                               xi=xi,
-                               acq_func_key=acq_func_key,
-                               **kwargs)
-        xmat, y = evaluate_add(xmat, xnew, y, test_func_key=test_func_key)
+                               acq_func,
+                               bounds)
+        xmat, y = evaluate_add(xmat, xnew, y, objective_func)
     return xmat, y

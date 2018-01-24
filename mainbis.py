@@ -77,67 +77,64 @@ sigma_sq_pred = pred.sigma_sqr_est(y, rx, Rinv, beta)
 fmin = np.min(y)
 hat_sigma = np.power(sigma_sq_pred, 0.5)
 
-#EI
+# EI
 exp_impr = AF.ExpImpr(xi=0, fmin=fmin)
 print (exp_impr.evaluate(y_hat, hat_sigma))
 
-#LCB
+# LCB
 low_conf_bound = AF.LowConfBound()
 print (low_conf_bound.evaluate(y_hat, hat_sigma))
+#
+# # Test acquisition_max
+# test = am.complete_acq_func(
+#     xtest,
+#     xnew,
+#     y,
+#     Rinv,
+#     beta,
+#     theta_vec,
+#     p_vec,
+#     exp_impr)
+#
+# print(test)
+#
+# # Test for max acq_func
+# opt = am.opti_acq_func(
+#     xtest,
+#     y,
+#     Rinv,
+#     beta,
+#     theta_vec,
+#     p_vec,
+#     xnew,
+#     low_conf_bound)
+#     #bounds=((0, 0), (5, 5)))
+# print(opt)
 
-# Test acquisition_max
-test = am.complete_acq_func(
-    xtest,
-    xnew,
-    y,
-    Rinv,
-    beta,
-    theta_vec,
-    p_vec,
-    exp_impr)
 
-print(test)
-
-# Test for max acq_func
-opt = am.opti_acq_func(
-    xtest,
-    y,
-    Rinv,
-    beta,
-    theta_vec,
-    p_vec,
-    xnew,
-    low_conf_bound)
-    #bounds=((0, 0), (5, 5)))
-print(opt)
-
-
-#Test for bayesian optimization
-#xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, func_key="LCB")
-#print(xbest)
-
+# Test for bayesian optimization
+# xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, exp_impr)
+# print(xbest)
+#
 # n_it = 10
 # xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
-#                   theta_vec,
-#                   p_vec,
-#                   bounds=((0, 5), (0, 5)),
-#                   xi=0,
-#                   acq_func_key="EI",
-#                   test_func_key="Mystery")
-#
+#                                   theta_vec,
+#                                   p_vec,
+#                                   exp_impr,
+#                                   test_func.mystery_vec,
+#                                   bounds=((0, 5), (0, 5)))
 # print(xx.shape)
 # print(np.min(yy))
 
 
-# viz.plot_acq_func_2d(xtest,
-#                      y,
-#                      Rinv,
-#                      beta,
-#                      theta_vec,
-#                      p_vec,
-#                      ((0, 5), (0, 5)),
-#                      (100, 100),
-#                      xi=0,
-#                      func_key="EI")
-#
-# viz.plot_test_func_2d(((0, 5), (0, 5)), (50, 50))
+viz.plot_acq_func_2d(xtest,
+                     y,
+                     Rinv,
+                     beta,
+                     theta_vec,
+                     p_vec,
+                     ((0, 5), (0, 5)),
+                     (100, 100),
+                     exp_impr)
+
+viz.plot_func_2d(((0, 5), (0, 5)), (50, 50), test_func.mystery_vec)

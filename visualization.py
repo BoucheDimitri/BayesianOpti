@@ -15,6 +15,20 @@ def mesh_grid(bounds, gridsize):
     return xgrid, ygrid
 
 
+def plot_func_2d(bounds, grid_size, func, title=None):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    xgrid, ygrid = mesh_grid(bounds, grid_size)
+    zgrid = np.zeros(shape=xgrid.shape)
+    for i in range(0, xgrid.shape[0]):
+        for j in range(0, xgrid.shape[1]):
+            zgrid[i, j] = func(np.array([xgrid[i, j], ygrid[i, j]]))
+    surf = ax.plot_surface(xgrid, ygrid, zgrid, cmap=cm.coolwarm,
+                           linewidth=0, antialiased=False)
+    plt.title(title)
+    plt.show()
+
+
 def plot_acq_func_2d(xmat,
                      y,
                      Rinv,
@@ -23,42 +37,14 @@ def plot_acq_func_2d(xmat,
                      p,
                      bounds,
                      grid_size,
-                     xi=0,
-                     acq_func_key="EI",
-                     **kwargs):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    xgrid, ygrid = mesh_grid(bounds, grid_size)
-    zgrid = np.zeros(shape=xgrid.shape)
-    for i in range(0, xgrid.shape[0]):
-        for j in range(0, xgrid.shape[1]):
-            zgrid[i, j] = am.acq_func(xmat,
-                                      np.array([xgrid[i, j], ygrid[i, j]]),
-                                      y,
-                                      Rinv,
-                                      beta_hat,
-                                      theta,
-                                      p,
-                                      xi=xi,
-                                      acq_func_key=acq_func_key,
-                                      **kwargs)
-    surf = ax.plot_surface(xgrid, ygrid, zgrid, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-    plt.show()
-
-
-def plot_test_func_2d(bounds,
-                      grid_size,
-                      test_func_key="Mystery"):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    xgrid, ygrid = mesh_grid(bounds, grid_size)
-    zgrid = np.zeros(shape=xgrid.shape)
-    for i in range(0, xgrid.shape[0]):
-        for j in range(0, xgrid.shape[1]):
-            zgrid[i, j] = tf.funcs_dic[test_func_key](np.array([xgrid[i, j], ygrid[i, j]]))
-    surf = ax.plot_surface(xgrid, ygrid, zgrid, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-    plt.show()
-
-
+                     acq_func):
+    def acq_plot(xnew):
+        return am.complete_acq_func(xmat,
+                                    xnew,
+                                    y,
+                                    Rinv,
+                                    beta_hat,
+                                    theta,
+                                    p,
+                                    acq_func)
+    plot_func_2d(bounds, grid_size, acq_plot, title=acq_func.name)
