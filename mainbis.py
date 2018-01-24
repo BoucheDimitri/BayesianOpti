@@ -7,6 +7,7 @@ import prediction_formulae as pred
 import bayesian_optimization as bayes_opti
 import acquisition_functions as af
 import acquisition_max as am
+import visualization as viz
 
 
 # Test for gp_tools
@@ -16,10 +17,10 @@ theta_vec = np.array([1, 1])
 p_vec = np.array([0.5, 0.5])
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
 R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
-#print(R)
+# print(R)
 xnew = np.random.rand(2)
 rx = exp_kernel.kernel_rx(xtest, xnew, theta_vec, p_vec)
-#print(rx)
+# print(rx)
 image = test_func.mystery_vec(xnew)
 
 
@@ -27,7 +28,7 @@ image = test_func.mystery_vec(xnew)
 y = np.zeros((n, 1))
 for i in range(0, n):
     y[i, 0] = test_func.mystery_vec(xtest[i, :])
-#print(y)
+# print(y)
 
 
 # Test for cho_inv
@@ -38,13 +39,13 @@ Rinv = cho_inv.cholesky_inv(R)
 
 # Test for prediction_formulae
 beta = pred.beta_est(y, Rinv)
-#print(beta)
+# print(beta)
 y_hat = pred.y_est(rx, y, Rinv, beta)
-#print(y_hat)
+# print(y_hat)
 sighat = pred.hat_sigmaz_sqr(y, Rinv, beta)
-#print(sighat)
+# print(sighat)
 sigma_sq_pred = pred.sigma_sqr_est(y, rx, Rinv, beta)
-#print(sigma_sq_pred)
+# print(sigma_sq_pred)
 
 
 # # Test for mle
@@ -114,22 +115,33 @@ sigma_sq_pred = pred.sigma_sqr_est(y, rx, Rinv, beta)
 # print(opt)
 
 
+# #Test for bayesian optimization
+# xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, func_key="LCB")
+# #print(xbest)
+#
+# print(xtest.shape)
+# print(xtest)
+# n_it = 50
+# xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
+#                   theta_vec,
+#                   p_vec,
+#                   bounds=((0, 5), (0, 5)),
+#                   xi=0,
+#                   acq_func_key="EI",
+#                   test_func_key="Mystery")
+#
+# print(xx.shape)
+# print(xx)
+# print(yy)
 
-#Test for bayesian optimization
-xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, func_key="LCB")
-#print(xbest)
 
-print(xtest.shape)
-print(xtest)
-n_it = 50
-xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
-                  theta_vec,
-                  p_vec,
-                  bounds=((0, 5), (0, 5)),
-                  xi=0,
-                  acq_func_key="EI",
-                  test_func_key="Mystery")
-
-print(xx.shape)
-print(xx)
-print(yy)
+viz.plot_acq_func_2d(xtest,
+                     y,
+                     Rinv,
+                     beta,
+                     theta_vec,
+                     p_vec,
+                     ((0, 5), (0, 5)),
+                     (50, 50),
+                     xi=2,
+                     func_key="LCB")
