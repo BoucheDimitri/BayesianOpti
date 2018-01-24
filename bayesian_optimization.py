@@ -60,10 +60,8 @@ def bayesian_search(xmat,
                     theta,
                     p,
                     xinit,
-                    bounds=None,
-                    xi=0,
-                    acq_func_key="EI",
-                    **kwargs):
+                    acq_func,
+                    bounds=None):
     """
     Search best point to sample by maximizing acquisition function
 
@@ -73,10 +71,8 @@ def bayesian_search(xmat,
         theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
         p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
         xinit (numpy.ndarray) : initial value for acquisition maximization, shape = (k, )
+        acq_func : Instance of one of the classes in Acquisition_Functions.py file
         bounds (tuple) : bounds for acquisition maximization in scipy
-        xi (float) : Tradeoff parameter between exploration and exploitation
-        acq_func_key (str) : Key for acq func, supported : "EI", "GEI", "LCB"
-        kwargs : additionnal parameters for acquisition functions (g for GEI for instance)
 
     Returns:
         numpy.ndarray. The new point to sample from given the data so far
@@ -84,19 +80,16 @@ def bayesian_search(xmat,
     R = exp_kernel.kernel_mat(xmat, theta, p)
     Rinv = cho_inv.cholesky_inv(R)
     beta_hat = pred.beta_est(y, Rinv)
-    opti_result = am.max_acq_func(xmat,
-                                  y,
-                                  Rinv,
-                                  beta_hat,
-                                  theta,
-                                  p,
-                                  xinit,
-                                  bounds,
-                                  xi,
-                                  acq_func_key=acq_func_key,
-                                  **kwargs)
+    opti_result = am.opti_acq_func(xmat,
+                                   y,
+                                   Rinv,
+                                   beta_hat,
+                                   theta,
+                                   p,
+                                   xinit,
+                                   acq_func,
+                                   bounds)
     best_xnew = opti_result.x
-    print(best_xnew.shape)
     return best_xnew
 
 
