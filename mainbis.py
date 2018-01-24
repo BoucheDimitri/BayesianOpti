@@ -11,10 +11,10 @@ import visualization as viz
 
 
 # Test for gp_tools
-n = 100
+n = 5
 xtest = 5 * np.random.rand(n, 2)
 theta_vec = np.array([1, 1])
-p_vec = np.array([0.5, 0.5])
+p_vec = np.array([1.5, 1.5])
 #R = gp_tools.kernel_mat_2d(xtest, theta_vec, p_vec)
 R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
 # print(R)
@@ -115,24 +115,21 @@ sigma_sq_pred = pred.sigma_sqr_est(y, rx, Rinv, beta)
 # print(opt)
 
 
-# #Test for bayesian optimization
-# xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, func_key="LCB")
-# #print(xbest)
-#
-# print(xtest.shape)
-# print(xtest)
-# n_it = 50
-# xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
-#                   theta_vec,
-#                   p_vec,
-#                   bounds=((0, 5), (0, 5)),
-#                   xi=0,
-#                   acq_func_key="EI",
-#                   test_func_key="Mystery")
-#
-# print(xx.shape)
-# print(xx)
-# print(yy)
+#Test for bayesian optimization
+#xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, func_key="LCB")
+#print(xbest)
+
+n_it = 10
+xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
+                  theta_vec,
+                  p_vec,
+                  bounds=((0, 5), (0, 5)),
+                  xi=0,
+                  acq_func_key="EI",
+                  test_func_key="Mystery")
+
+print(xx.shape)
+print(np.min(yy))
 
 
 viz.plot_acq_func_2d(xtest,
@@ -143,5 +140,7 @@ viz.plot_acq_func_2d(xtest,
                      p_vec,
                      ((0, 5), (0, 5)),
                      (50, 50),
-                     xi=2,
-                     func_key="LCB")
+                     xi=0,
+                     func_key="EI")
+
+viz.plot_test_func_2d(((0, 5), (0, 5)), (50, 50))
