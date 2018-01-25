@@ -3,9 +3,31 @@ from matplotlib import cm
 import numpy as np
 
 import acquisition_max as am
+import prediction_formulae as pred
 
 
-def plot_func_1d(bounds, grid_size, func, nsub_plots=1, axis=None, label=None, c=None):
+def plot_func_1d(
+        bounds,
+        grid_size,
+        func,
+        nsub_plots=1,
+        axis=None,
+        label=None,
+        c=None):
+    """
+    Plot a function in 1d
+
+    Args :
+        bounds (tuple) : ((min_d1, min_d2), (max_d1, max_d2))
+        grid_size (tuple) : (gridsize_x, gridsize_y)
+        func (function) : 1d func to plot
+        nsub_plots (int) : if no axis provided, create new figure with nsub_plots subplots
+        axis( : axis to plot on if on already existing figure
+        label(str) : legend for func plot
+
+    Returs:
+        Depends, if axis is provided, returns None, else returns fig, axes
+    """
     if isinstance(bounds[0], tuple):
         grid = np.linspace(bounds[0][0], bounds[0][1], grid_size)
     else:
@@ -16,7 +38,7 @@ def plot_func_1d(bounds, grid_size, func, nsub_plots=1, axis=None, label=None, c
     else:
         fig, axes = plt.subplots(nsub_plots, 1, sharex=True)
         axes[0].plot(grid, y, label=label, c=c)
-        return axes
+        return fig, axes
 
 
 def plot_acq_func_1d(xmat,
@@ -30,7 +52,7 @@ def plot_acq_func_1d(xmat,
                      acq_func,
                      axis):
     """
-    3d heated colored surface plot of acquisition function
+    Plot tool for 1d acquisition function
 
     Args :
         xmat (numpy.ndarray) : the data points so far, shape = (n, k)
@@ -39,12 +61,13 @@ def plot_acq_func_1d(xmat,
         beta_hat (float) : estimation of beta
         theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
         p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
-        bounds (tuple) : ((min_d1, min_d2), (max_d1, max_d2))
+        bounds (tuple) : (min, max)
         grid_size (tuple) : (gridsize_x, gridsize_y)
         acq_func : Instance of one of the classes in Acquisition_Functions.py file
+        axis (matplotlib.axes._subplots.AxesSubplot) : Axis to plot on
 
     Returs:
-        nonetype. None
+        matplotlib.axes._subplots.AxesSubplot. The axis with the new plot
 
     """
     def acq_plot(xnew):
@@ -56,7 +79,12 @@ def plot_acq_func_1d(xmat,
                                     theta,
                                     p,
                                     acq_func)
-    axis = plot_func_1d(bounds, grid_size, acq_plot, axis=axis)
+    axis = plot_func_1d(
+        bounds,
+        grid_size,
+        acq_plot,
+        axis=axis,
+        label=acq_func.name)
     return axis
 
 
@@ -66,6 +94,62 @@ def add_points_1d(ax, points_x, points_y, c=None, label=None):
     else:
         ax.scatter(points_x, points_y, c=c)
     return ax
+
+
+def plot_gp_means_std(xmat,
+                      y,
+                      Rinv,
+                      beta_hat,
+                      theta,
+                      p,
+                      bounds,
+                      grid_size,
+                      axis):
+    xgrid = np.linspace(bounds[0], bounds[1], grid_size)
+    gp_means, gp_stds = pred.pred_means_stds(
+        xgrid, xmat, y, Rinv, beta_hat, theta, p)
+    plus_1std = gp_means + gp_stds
+    minus_1std = gp_means - gp_stds
+    axis.plot(xgrid, gp_means)
+    axis.fill_between(xgrid, plus_1std, minus_1std, alpha=.3)
+    return axis
+
+
+def bayes_opti_plot_1d(xmat,
+                       y,
+                       Rinv,
+                       beta_hat,
+                       theta,
+                       p,
+                       bounds,
+                       grid_size,
+                       acq_func,
+                       objective_func):
+    fig, axes = plot_func_1d(
+        bounds, grid_size, objective_func, nsub_plots=2, label="Objective")
+    print(axes.shape)
+    axes[0] = add_points_1d(axes[0], xmat, y)
+    axes[1] = plot_acq_func_1d(xmat,
+                               y,
+                               Rinv,
+                               beta_hat,
+                               theta,
+                               p,
+                               bounds,
+                               grid_size,
+                               acq_func,
+                               axis=axes[1])
+    axes[0] = plot_gp_means_std(xmat,
+                                y,
+                                Rinv,
+                                beta_hat,
+                                theta,
+                                p,
+                                bounds,
+                                grid_size,
+                                axes[0])
+    plt.legend()
+    return axes
 
 
 def mesh_grid(bounds, grid_size):

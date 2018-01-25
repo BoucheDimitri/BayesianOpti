@@ -111,8 +111,12 @@ def max_log_likelihood(
             params_fixedp = np.concatenate((np.array(theta_vec), p_vec))
             print(theta_vec)
             return - log_likelihood(xmat, y, params_fixedp)
+        if mins_list:
+            bounds = bounds_generator(mins_list, maxs_list)
+        else:
+            bounds = None
         opti = optimize.minimize(
-            fun=minus_llk_opti, x0=params_init[0:dim], method="L-BFGS-B")
+            fun=minus_llk_opti, x0=params_init[0:dim], bounds=bounds, method="L-BFGS-B")
     else:
         def minus_llk_opti(params):
             print(params)

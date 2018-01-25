@@ -1,11 +1,13 @@
 import numpy as np
 import cho_inv
+import visualization as viz
 import prediction_formulae as pred
 import exp_kernel
 import test_functions as test_func
 import max_likelihood as max_llk
 import acquisition_functions as af
 import acquisition_max as am
+import initializations as initial
 
 
 def bayesian_optimization(n, nb_it, p_vec, theta_vec, function2Bmin):
@@ -115,23 +117,6 @@ def evaluate_add(xmat, xnew, y, objective_func):
     return xmat, y
 
 
-def x_init_indounds(bounds):
-    """
-    Random initialization of xinit within given bounds
-
-    Args :
-        bounds (tuple) : bounds, for instance in 2d : ((min_d1, min_d2), (max_d1, max_d2))
-
-    Returns:
-        numpy.ndarray. The random point for initialization within bounds
-    """
-    k = len(bounds)
-    xinit = np.zeros((k, ))
-    for b in range(0, k):
-        xinit[b] = np.random.uniform(bounds[b][0], bounds[b][1])
-    return xinit
-
-
 def bayesian_opti(xmat,
                   y,
                   n_it,
@@ -158,7 +143,7 @@ def bayesian_opti(xmat,
     k = xmat.shape[1]
     for i in range(0, n_it):
         if bounds:
-            xinit = x_init_indounds(bounds)
+            xinit = initial.xinit_inbounds(bounds)
         else:
             xinit = np.random.rand(k)
         xnew = bayesian_search(xmat,
@@ -170,3 +155,40 @@ def bayesian_opti(xmat,
                                bounds)
         xmat, y = evaluate_add(xmat, xnew, y, objective_func)
     return xmat, y
+
+
+def bayesian_opti_plot_1d(xmat,
+                          y,
+                          n_it,
+                          theta,
+                          p,
+                          acq_func,
+                          objective_func,
+                          bounds=None):
+    for i in range(0, n_it):
+        xinit = initial.xinit_inbounds(bounds)
+        if acq_func.name == "EI":
+            acq_func.set_fmin(np.min(y))
+        xnew = bayesian_search(xmat,
+                               y,
+                               theta,
+                               p,
+                               xinit,
+                               acq_func,
+                               bounds)
+        R = exp_kernel.kernel_mat(xmat, theta, p)
+        Rinv = cho_inv.cholesky_inv(R)
+        beta_hat = pred.beta_est(y, Rinv)
+        axes = viz.bayes_opti_plot_1d(xmat,
+                                      y,
+                                      Rinv,
+                                      beta_hat,
+                                      theta,
+                                      p,
+                                      bounds[0],
+                                      grid_size=1000,
+                                      acq_func=acq_func,
+                                      objective_func=objective_func)
+        axes[0].axvline(xnew[0], axes[0].get_ylim()[0], axes[0].get_ylim()[1])
+        axes[1].axvline(xnew[0], axes[1].get_ylim()[0], axes[1].get_ylim()[1])
+        xmat, y = evaluate_add(xmat, xnew, y, objective_func)
