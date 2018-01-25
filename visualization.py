@@ -5,6 +5,69 @@ import numpy as np
 import acquisition_max as am
 
 
+def plot_func_1d(bounds, grid_size, func, nsub_plots=1, axis=None, label=None, c=None):
+    if isinstance(bounds[0], tuple):
+        grid = np.linspace(bounds[0][0], bounds[0][1], grid_size)
+    else:
+        grid = np.linspace(bounds[0], bounds[1], grid_size)
+    y = [func(np.array([grid[i]])) for i in range(0, grid.shape[0])]
+    if axis:
+        axis.plot(grid, y, label=label, c=c)
+    else:
+        fig, axes = plt.subplots(nsub_plots, 1, sharex=True)
+        axes[0].plot(grid, y, label=label, c=c)
+        return axes
+
+
+def plot_acq_func_1d(xmat,
+                     y,
+                     Rinv,
+                     beta_hat,
+                     theta,
+                     p,
+                     bounds,
+                     grid_size,
+                     acq_func,
+                     axis):
+    """
+    3d heated colored surface plot of acquisition function
+
+    Args :
+        xmat (numpy.ndarray) : the data points so far, shape = (n, k)
+        y (numpy.ndarray) : y, shape=(n, 1)
+        Rinv (numpy.ndarray) : inverse of kernel matrix
+        beta_hat (float) : estimation of beta
+        theta (numpy.ndarray) : vector of theta params, one by dim, shape = (k, )
+        p (numpy.ndarray) : powers used to compute the distance, one by dim, shape = (k, )
+        bounds (tuple) : ((min_d1, min_d2), (max_d1, max_d2))
+        grid_size (tuple) : (gridsize_x, gridsize_y)
+        acq_func : Instance of one of the classes in Acquisition_Functions.py file
+
+    Returs:
+        nonetype. None
+
+    """
+    def acq_plot(xnew):
+        return am.complete_acq_func(xmat,
+                                    xnew,
+                                    y,
+                                    Rinv,
+                                    beta_hat,
+                                    theta,
+                                    p,
+                                    acq_func)
+    axis = plot_func_1d(bounds, grid_size, acq_plot, axis=axis)
+    return axis
+
+
+def add_points_1d(ax, points_x, points_y, c=None, label=None):
+    if label:
+        ax.scatter(points_x, points_y, c=c, label=label)
+    else:
+        ax.scatter(points_x, points_y, c=c)
+    return ax
+
+
 def mesh_grid(bounds, grid_size):
     """
     Create a meshgrid for 3d plots

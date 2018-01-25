@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import cho_inv
+import exp_kernel
 
 
 def beta_est(y, Rinv):
@@ -46,3 +47,19 @@ def sigma_sqr_est(y, rx, Rinv, beta_hat):
     sigz_sqr = hat_sigmaz_sqr(y, Rinv, beta_hat)
     rxt_Rinv_rx = float(np.dot(np.dot(rx.T, Rinv), rx))
     return sigz_sqr * (1 - rxt_Rinv_rx)
+
+
+def pred_means_stds(x_grid, xmat, y, theta, p):
+    gp_means = np.zeros(shape=x_grid.shape)
+    gp_stds = np.zeros(shape=x_grid.shape)
+    for i in range(0, x_grid.shape[0]):
+        R = exp_kernel.kernel_mat(xmat, theta, p)
+        Rinv = cho_inv.cholesky_inv(R)
+        beta_hat = beta_est(y, Rinv)
+        rx = exp_kernel.kernel_rx(xmat, np.array([x_grid[i]]), theta, p)
+        y_hat = y_est(rx, y, Rinv, beta_hat)
+        sig_hat = np.sqrt(sigma_sqr_est(y, rx, Rinv, beta_hat))
+        gp_means[i] = y_hat
+        gp_stds[i] = sig_hat
+    return gp_means, gp_stds
+

@@ -1,4 +1,23 @@
 import math
+import numpy as np
+
+
+def sin_1d(xvec):
+    return math.sin(xvec[0])
+
+
+def test_1d(xvec):
+    if isinstance(xvec, np.ndarray):
+        return np.abs(xvec[0] - 5) * np.cos(2 * xvec[0])
+    else:
+        return np.abs(xvec - 5) * np.cos(2 * xvec)
+
+
+def test_1d_bis(xvec):
+    if isinstance(xvec, np.ndarray):
+        return -np.log(np.abs(xvec[0] - 5)) * np.cos(2 * xvec[0])
+    else:
+        return -np.log(np.abs(xvec - 5)) * np.cos(2 * xvec)
 
 
 def mystery(x1, x2):

@@ -5,7 +5,7 @@ class ExpImpr:
 
     def __init__(self, xi=0.01, bounds=None, fmin=None):
         """
-        Constructor for ExpImpr class
+        Constructor for ExpImpr class (Expected Improvement acquisition)
 
         Args :
             xi (float) : Exploration encouragement parameter
