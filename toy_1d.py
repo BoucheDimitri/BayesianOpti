@@ -1,16 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-import cho_inv
-import exp_kernel
 import test_functions as test_func
 import max_likelihood as max_llk
-import prediction_formulae as pred
 import bayesian_optimization as bayes_opti
-import acquisition_functions as af
-import acquisition_max as am
 import AcqFuncs as AF
-import visualization as viz
 import initializations as initial
 
 
@@ -35,7 +28,7 @@ y = initial.init_y(xmat, objective_func)
 
 # Initialization of kernel parameters
 theta_vec = np.array([10])
-p_vec = np.array([1.5])
+p_vec = np.array([2])
 
 # Parameters in one vector for mle
 params_init = np.concatenate((theta_vec, p_vec))
@@ -48,7 +41,7 @@ opti = max_llk.max_log_likelihood(
         fixed_p=True,
         mins_list=[0.01],
         maxs_list=[None])
-theta_vec = opti.x
+#theta_vec = opti.x
 
 
 
