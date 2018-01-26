@@ -79,7 +79,7 @@ def plot_acq_func_1d(xmat,
                                     theta,
                                     p,
                                     acq_func)
-    axis = plot_func_1d(
+    plot_func_1d(
         bounds,
         grid_size,
         acq_plot,
@@ -127,7 +127,6 @@ def bayes_opti_plot_1d(xmat,
                        objective_func):
     fig, axes = plot_func_1d(
         bounds, grid_size, objective_func, nsub_plots=2, label="Objective")
-    print(axes.shape)
     axes[0] = add_points_1d(axes[0], xmat, y)
     axes[1] = plot_acq_func_1d(xmat,
                                y,

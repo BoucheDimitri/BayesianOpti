@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import cho_inv
 import visualization as viz
 import prediction_formulae as pred
@@ -91,8 +92,7 @@ def bayesian_search(xmat,
                                    xinit,
                                    acq_func,
                                    bounds)
-    best_xnew = opti_result.x
-    return best_xnew
+    return opti_result
 
 
 def evaluate_add(xmat, xnew, y, objective_func):
@@ -146,13 +146,14 @@ def bayesian_opti(xmat,
             xinit = initial.xinit_inbounds(bounds)
         else:
             xinit = np.random.rand(k)
-        xnew = bayesian_search(xmat,
+        opti_result = bayesian_search(xmat,
                                y,
                                theta,
                                p,
                                xinit,
                                acq_func,
                                bounds)
+        xnew = opti_result.x
         xmat, y = evaluate_add(xmat, xnew, y, objective_func)
     return xmat, y
 
@@ -166,16 +167,18 @@ def bayesian_opti_plot_1d(xmat,
                           objective_func,
                           bounds=None):
     for i in range(0, n_it):
+        print(i)
         xinit = initial.xinit_inbounds(bounds)
         if acq_func.name == "EI":
             acq_func.set_fmin(np.min(y))
-        xnew = bayesian_search(xmat,
+        opti_result = bayesian_search(xmat,
                                y,
                                theta,
                                p,
                                xinit,
                                acq_func,
                                bounds)
+        xnew = opti_result.x
         R = exp_kernel.kernel_mat(xmat, theta, p)
         Rinv = cho_inv.cholesky_inv(R)
         beta_hat = pred.beta_est(y, Rinv)
@@ -189,6 +192,7 @@ def bayesian_opti_plot_1d(xmat,
                                       grid_size=1000,
                                       acq_func=acq_func,
                                       objective_func=objective_func)
-        axes[0].axvline(xnew[0], axes[0].get_ylim()[0], axes[0].get_ylim()[1])
-        axes[1].axvline(xnew[0], axes[1].get_ylim()[0], axes[1].get_ylim()[1])
+        y_acq = - opti_result.fun
+        axes[1].vlines(xnew[0], 0, y_acq, linestyles='dashed', colors='r', linewidth=2)
+        plt.show()
         xmat, y = evaluate_add(xmat, xnew, y, objective_func)
