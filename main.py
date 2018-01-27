@@ -112,13 +112,13 @@ print (low_conf_bound.evaluate(y_hat, hat_sigma))
 # xbest = bayes_opti.bayesian_search(xtest, y, theta_vec, p_vec, xnew, exp_impr)
 # print(xbest)
 #
-# n_it = 10
-# xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
-#                                   theta_vec,
-#                                   p_vec,
-#                                   exp_impr,
-#                                   test_func.mystery_vec,
-#                                   bounds=((0, 5), (0, 5)))
+n_it = 10
+xx, yy = bayes_opti.bayesian_opti(xtest, y, n_it,
+                                   theta_vec,
+                                   p_vec,
+                                   exp_impr="EI",
+                                   test_func.mystery_vec,
+                                   bounds=((0, 5), (0, 5)))
 # print(xx.shape)
 # print(np.min(yy))
 

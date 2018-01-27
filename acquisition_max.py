@@ -51,7 +51,8 @@ def opti_acq_func(
         p,
         xinit,
         acq_func,
-        bounds=None):
+        bounds=None,
+        constraints=None):
     """
     Optimize acquisition function
 
@@ -78,5 +79,6 @@ def opti_acq_func(
         fun=to_optimize,
         x0=xinit,
         bounds=bounds,
-        method='SLSQP')
+        constraints=constraints,
+        method='COBYLA') #'SLSQP' originally
     return opti
