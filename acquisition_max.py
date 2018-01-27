@@ -78,5 +78,5 @@ def opti_acq_func(
         fun=to_optimize,
         x0=xinit,
         bounds=bounds,
-        method='SLSQP')
+        method='COBYLA')
     return opti
