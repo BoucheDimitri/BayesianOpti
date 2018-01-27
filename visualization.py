@@ -1,6 +1,9 @@
-import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 import acquisition_max as am
 import prediction_formulae as pred
@@ -168,7 +171,7 @@ def mesh_grid(bounds, grid_size):
     return xgrid, ygrid
 
 
-def plot_func_2d(bounds, grid_size, func, title=None):
+def plot_func_2d(bounds, grid_size, func, title=None, plot_type="ColoredSurface", alpha=None, ax=None):
     """
     3d heated colored surface plot of R^2 to R function
 
@@ -182,17 +185,31 @@ def plot_func_2d(bounds, grid_size, func, title=None):
         nonetype. None
 
     """
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    if not ax:
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
     xgrid, ygrid = mesh_grid(bounds, grid_size)
     zgrid = np.zeros(shape=xgrid.shape)
     for i in range(0, xgrid.shape[0]):
         for j in range(0, xgrid.shape[1]):
             zgrid[i, j] = func(np.array([xgrid[i, j], ygrid[i, j]]))
-    surf = ax.plot_surface(xgrid, ygrid, zgrid, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
+    if plot_type == "WireFrame":
+        ax.plot_wireframe(xgrid, ygrid, zgrid, alpha=alpha)
+    elif plot_type == "ColoredSurface":
+        ax.plot_surface(xgrid, ygrid, zgrid, cmap=cm.coolwarm,
+                        linewidth=0.1, antialiased=False, alpha=alpha)
+    else:
+        ax.plot_surface(xgrid, ygrid, zgrid, linewidth=0.1, antialiased=False, alpha=alpha)
     plt.title(title)
-    plt.show()
+    return ax
+
+
+def add_points_2d(xmat, y, ax=None):
+    if not ax:
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+    ax.scatter(xmat[:, 0], xmat[:, 1], y[:, 0], marker="o", s=100, c='k')
+    return ax
 
 
 def plot_acq_func_2d(xmat,
@@ -231,4 +248,9 @@ def plot_acq_func_2d(xmat,
                                     theta,
                                     p,
                                     acq_func)
-    plot_func_2d(bounds, grid_size, acq_plot, title=acq_func.name)
+    title = acq_func.name
+    if title == "EI":
+        title += "; xi=" + str(acq_func.xi)
+    elif title == "LCB":
+        title += "; eta=" + str(acq_func.eta)
+    plot_func_2d(bounds, grid_size, acq_plot, title=title)
