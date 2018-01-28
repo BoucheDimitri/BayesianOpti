@@ -15,7 +15,8 @@ def bayesian_search(xmat,
                     p,
                     xinit,
                     acq_func,
-                    bounds=None):
+                    bounds=None,
+                    constraints=None):
     """
     Search best point to sample by maximizing acquisition function
 
@@ -42,7 +43,8 @@ def bayesian_search(xmat,
                                    p,
                                    xinit,
                                    acq_func,
-                                   bounds)
+                                   bounds,
+                                   constraints)
     return opti_result
 
 
@@ -75,7 +77,8 @@ def bayesian_opti(xmat,
                   p,
                   acq_func,
                   objective_func,
-                  bounds=None):
+                  bounds=None,
+                  constraints=None):
     """
     Perform iterations of bayesian optimization
 
@@ -116,7 +119,8 @@ def bayesian_opti_plot_1d(xmat,
                           p,
                           acq_func,
                           objective_func,
-                          bounds=None):
+                          bounds=None,
+                          constraints=None):
     for i in range(0, n_it):
         print(i)
         xinit = initial.xinit_inbounds(bounds)
@@ -128,7 +132,8 @@ def bayesian_opti_plot_1d(xmat,
                                p,
                                xinit,
                                acq_func,
-                               bounds)
+                               bounds,
+                               constraints)
         xnew = opti_result.x
         R = exp_kernel.kernel_mat(xmat, theta, p)
         Rinv = cho_inv.cholesky_inv(R)

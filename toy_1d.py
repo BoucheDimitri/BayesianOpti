@@ -22,6 +22,10 @@ acq_func = AF.ExpImpr(xi=0.01)
 # Choice domain for ojective
 bounds = (0, 10)
 
+# Set the constratins for optimization
+constraints = ({'type': 'ineq', 'fun': lambda x: x},
+               {'type': 'ineq', 'fun': lambda x: -x+10})
+
 # Random initialization of points
 xmat = initial.xmat_inbounds(n, [bounds])
 y = initial.init_y(xmat, objective_func)
@@ -44,7 +48,6 @@ opti = max_llk.max_log_likelihood(
 #theta_vec = opti.x
 
 
-
 x, y = bayes_opti.bayesian_opti_plot_1d(xmat,
                   y,
                   n_it,
@@ -52,7 +55,8 @@ x, y = bayes_opti.bayesian_opti_plot_1d(xmat,
                   p_vec,
                   acq_func,
                   objective_func,
-                  [bounds])
+                  [bounds],
+                  constraints=constraints)
 
 # R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
 # xnew = np.random.rand(1)
