@@ -17,7 +17,7 @@ import bayesian_optimization as bayes_opti
 # **EXECUTION PARAMETERS**
 
 # number of points selected randomly for initial sampling
-n = 5
+n = 25
 
 # number of dimensions
 d = 2
@@ -30,14 +30,14 @@ objective_func = test_func.mystery_vec
 
 # Choice of acquisition function
 # acq_func1 will be used, acq_func2 is only for plotting to draw comparisons
-acq_func1 = AF.ExpImpr(xi=0.1)
-acq_func2 = AF.LowConfBound(eta=1.0)
+acq_func1 = AF.ExpImpr(xi=0.01)
+acq_func2 = AF.LowConfBound(eta=2)
 
 # Choice domain for ojective
 bounds = ((0, 5), (0, 5))
 
 # Should max likelihood be performed  for kernel params ?
-perform_mle = False
+perform_mle = True
 
 # Should acquisition function be plotted at initial step ?
 plot_acq_2d = True
@@ -51,7 +51,7 @@ y = initial.init_y(xmat, objective_func)
 
 # Initialization of kernel parameters
 theta_vec = np.array([10, 10])
-p_vec = np.array([2, 2])
+p_vec = np.array([1.9, 1.9])
 
 # Parameters in one vector for mle
 params_init = np.concatenate((theta_vec, p_vec))
@@ -108,7 +108,7 @@ if plot_acq_2d and (d == 2):
         title="Objective function")
     plt.show()
 
-# Bayesian optimization
+#Bayesian optimization
 xmat_opti, y_opti = bayes_opti.bayesian_opti(xmat, y, n_it,
                                              theta_vec,
                                              p_vec,
