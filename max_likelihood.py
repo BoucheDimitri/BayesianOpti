@@ -18,7 +18,7 @@ def params_to_vec(params_vec):
     Returns :
          tuple. (theta_vec, p_vec)
     """
-    dim = params_vec.shape[0] / 2
+    dim = int(params_vec.shape[0] / 2)
     theta_vec = params_vec[0: dim]
     p_vec = params_vec[dim:]
     return theta_vec, p_vec
@@ -104,7 +104,7 @@ def max_log_likelihood(
     """
 
     if fixed_p:
-        dim = params_init.shape[0] / 2
+        dim = int(params_init.shape[0] / 2)
         p_vec = params_init[dim:]
 
         def minus_llk_opti(theta_vec):
