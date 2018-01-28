@@ -45,8 +45,8 @@ class LowConfBound:
     def __init__(self, eta=2):
         self.eta = eta
         #In minimization case, LCB should be minimized not maximized
-        self.opti_way = "min"
+        self.opti_way = "max"
         self.name = "LCB"
 
     def evaluate(self, y, sigma):
-        return y - self.eta * sigma
+        return - (y - self.eta * sigma)
