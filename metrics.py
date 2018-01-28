@@ -6,6 +6,9 @@ import max_likelihood as max_llk
 import bayesian_optimization as bayes_opti
 import acquisition_max as am
 import visualization as viz
+import prediction_formulae as pred
+import exp_kernel
+
 import scipy
 import math
 
@@ -59,7 +62,7 @@ def x_precisionp_metric(xmat, true_x_sol, p):
      with an objective function value within p*100% of the true solution
     Args:
         xmat (numpy.ndarray) : the data points so far, shape = (n, k)
-        true_x_min (numpy.ndarray) : true solution of the function, shape(1, k)
+        true_x_min (tuple) : true solution of the function, shape(1, k)
         p (0<float<1) : percentage of precision
     Returns:
         integer: nb of iterations required before a point is sampled 
@@ -75,7 +78,7 @@ def x_precisionp_metric(xmat, true_x_sol, p):
     for i in range(0,n):
         counter = 0
         for j in range(0, k):
-            if spread_mat[i,j]>abs(p*true_x_sol[0,j]): break
+            if spread_mat[i,j]>abs(p*true_x_sol[j]): break
             else: counter += 1
         if counter == k:
             nb_it_precisionp = i+1
@@ -142,7 +145,8 @@ def eval_fun_with_grid(functions2Beval, grid):
     for i in range(0, dim1):
         for j in range(0, dim2):
             for k in range(0, nb_fun):
-                results[i,j,k] = functions2Beval[k](grid[0][i,j],grid[1][i,j])
+                point_to_be_eval = np.array([grid[0][i,j],grid[1][i,j]]).reshape(2,1)
+                results[i,j,k] = functions2Beval[k](point_to_be_eval)
     return results
 
 #test eval_fun_with_grid
@@ -173,13 +177,26 @@ def rms_metric(prediction_function, true_function, bounds, gridsize):
 #results_mat = eval_fun_with_grid([uno,dos], grid)
 #error = rms_error(results_mat[:,0], results_mat[:,1])
     
-def all_metrics(prediction_function, true_function, bounds, gridsize,
-                y, xmat, true_y_sol, true_x_sol, p):
+def prediction_function_krigging(xnew, y, xmat, theta_vec, p_vec):
+    R = exp_kernel.kernel_mat(xmat, theta_vec, p_vec)
+    Rinv = cho_inv.cholesky_inv(R)
+    beta_hat = pred.beta_est(y, Rinv)
+    rx = exp_kernel.kernel_rx(xmat, xnew, theta_vec, p_vec)
+    y_hat = pred.y_est(rx, y, Rinv, beta_hat)
+    return y_hat
+
+def all_metrics(true_function, bounds, gridsize,
+                y, xmat, true_y_sol, true_x_sol, theta_vec, p_vec, p):
+    
+    def prediction_function_krigging_rms(xnew):
+        return prediction_function_krigging(xnew, y, xmat, theta_vec, p_vec)
+    
     results = dict()
     results["f%"] = f_precisionp_metric(y, true_y_sol, p)
     results["x%"] = x_precisionp_metric(xmat, true_x_sol, p)
     results["x*"] = x_star_metric(y, xmat, true_y_sol, true_x_sol)
-    results["RMS"] = rms_metric(prediction_function, true_function, bounds, gridsize)
+    results["RMS"] = rms_metric(prediction_function_krigging_rms, true_function, 
+                       bounds, gridsize)
     return results
 
 #p=2/100

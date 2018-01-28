@@ -12,7 +12,7 @@ import visualization as viz
 import initializations as initial
 import max_likelihood as max_llk
 import bayesian_optimization as bayes_opti
-
+import metrics
 
 # **EXECUTION PARAMETERS**
 
@@ -115,3 +115,11 @@ xmat_opti, y_opti = bayes_opti.bayesian_opti(xmat, y, n_it,
                                              acq_func1,
                                              objective_func,
                                              bounds=bounds)
+
+#Metrics of performance
+gridsize = [30,30]
+true_y_sol=-1.4565
+true_x_sol=[2.5044,2.5778]
+p=10/100
+table = metrics.all_metrics(objective_func, bounds, gridsize,
+                y_opti, xmat_opti, true_y_sol, true_x_sol, theta_vec, p_vec, p)
