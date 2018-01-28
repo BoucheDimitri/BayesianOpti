@@ -42,6 +42,14 @@ def complete_acq_func(
     return acq_func.evaluate(hat_y, hat_sigma)
 
 
+def constraints_bounded(bounds):
+    dim = len(bounds)
+    constraints = []
+    for i in range(0,dim):
+        constraints += [{'type': 'ineq', 'fun': lambda x: x-bounds[i][0]},
+                    {'type': 'ineq', 'fun': lambda x: -x+bounds[i][1]}]
+    return(constraints)
+
 def opti_acq_func(
         xmat,
         y,
@@ -51,8 +59,7 @@ def opti_acq_func(
         p,
         xinit,
         acq_func,
-        bounds=None,
-        constraints=None):
+        bounds=None):
     """
     Optimize acquisition function
 
@@ -69,6 +76,7 @@ def opti_acq_func(
     Returns:
 
     """
+    constraints = constraints_bounded(bounds)
     def to_optimize(xnew):
         if acq_func.opti_way == "max":
             opti_sign = -1

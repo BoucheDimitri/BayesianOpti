@@ -43,8 +43,7 @@ def bayesian_search(xmat,
                                    p,
                                    xinit,
                                    acq_func,
-                                   bounds,
-                                   constraints)
+                                   bounds)
     return opti_result
 
 
@@ -77,8 +76,7 @@ def bayesian_opti(xmat,
                   p,
                   acq_func,
                   objective_func,
-                  bounds=None,
-                  constraints=None):
+                  bounds=None):
     """
     Perform iterations of bayesian optimization
 
@@ -119,8 +117,7 @@ def bayesian_opti_plot_1d(xmat,
                           p,
                           acq_func,
                           objective_func,
-                          bounds=None,
-                          constraints=None):
+                          bounds=None):
     for i in range(0, n_it):
         print(i)
         xinit = initial.xinit_inbounds(bounds)
