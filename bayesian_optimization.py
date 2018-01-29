@@ -129,8 +129,7 @@ def bayesian_opti_plot_1d(xmat,
                                p,
                                xinit,
                                acq_func,
-                               bounds,
-                               constraints)
+                               bounds)
         xnew = opti_result.x
         R = exp_kernel.kernel_mat(xmat, theta, p)
         Rinv = cho_inv.cholesky_inv(R)

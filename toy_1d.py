@@ -55,8 +55,7 @@ x, y = bayes_opti.bayesian_opti_plot_1d(xmat,
                   p_vec,
                   acq_func,
                   objective_func,
-                  [bounds],
-                  constraints=constraints)
+                  [bounds])
 
 # R = exp_kernel.kernel_mat(xtest, theta_vec, p_vec)
 # xnew = np.random.rand(1)

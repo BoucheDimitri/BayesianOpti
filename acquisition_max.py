@@ -86,7 +86,6 @@ def opti_acq_func(
     opti = optimize.minimize(
         fun=to_optimize,
         x0=xinit,
-        bounds=bounds,
         constraints=constraints,
         method='COBYLA') #'SLSQP' originally
     return opti
