@@ -11,6 +11,7 @@ import exp_kernel
 
 import scipy
 import math
+import pandas as pd
 
 def spread_bylines(mat, point):
     """
@@ -92,15 +93,17 @@ def x_precisionp_metric(xmat, true_x_sol, p):
 #p=1/10
 #x_precisionp_metric(xmat, true_x_sol, p)
     
-def x_star_metric(y, xmat, true_y_sol, true_x_sol):
+def x_star_metric(xmat, true_x_sol):
     """
-    The Euclidean distance from the best sample point to the global solution
+    The Euclidean distance from the nearest sample point to the global solution
     """
-    spread = spread_bylines(y, true_y_sol)
-    index_best_x = np.argmin(spread)
-    best_x = xmat[index_best_x,]
-    dist = scipy.spatial.distance.euclidean(best_x, true_x_sol)
-    return dist
+    nb_sample = xmat.shape[0]
+    distances = np.zeros(nb_sample)
+    for i in range(0,nb_sample):
+        distances[i] = scipy.spatial.distance.euclidean(xmat[i,:], true_x_sol)
+    index_min = np.argmin(distances)
+    x_star = xmat[index_min,:]
+    return scipy.spatial.distance.euclidean(x_star,true_x_sol)
 
 #y=np.random.uniform(0,1,2).reshape(2,1)
 #xmat=np.random.uniform(0,1,4).reshape(2,2)
@@ -191,12 +194,17 @@ def all_metrics(true_function, bounds, gridsize,
     def prediction_function_krigging_rms(xnew):
         return prediction_function_krigging(xnew, y, xmat, theta_vec, p_vec)
     
-    results = dict()
-    results["f%"] = f_precisionp_metric(y, true_y_sol, p)
-    results["x%"] = x_precisionp_metric(xmat, true_x_sol, p)
-    results["x*"] = x_star_metric(y, xmat, true_y_sol, true_x_sol)
-    results["RMS"] = rms_metric(prediction_function_krigging_rms, true_function, 
-                       bounds, gridsize)
+#    results = dict()
+#    results["Best est."] = min(y)
+#    results["f%"] = f_precisionp_metric(y, true_y_sol, p)
+#    results["x%"] = x_precisionp_metric(xmat, true_x_sol, p)
+#    results["x*"] = x_star_metric(xmat, true_x_sol)
+#    results["RMS"] = rms_metric(prediction_function_krigging_rms, true_function, 
+#                       bounds, gridsize)
+    results = [float(min(y)), f_precisionp_metric(y, true_y_sol, p),
+          x_precisionp_metric(xmat, true_x_sol, p),
+          x_star_metric(xmat, true_x_sol), 
+          rms_metric(prediction_function_krigging_rms,true_function, bounds, gridsize)]
     return results
 
 #p=2/100

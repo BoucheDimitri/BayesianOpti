@@ -17,13 +17,13 @@ import metrics
 # **EXECUTION PARAMETERS**
 
 # number of points selected randomly for initial sampling
-n = 25
+n = 10
 
 # number of dimensions
 d = 2
 
 # number of bayesian optimization iterations
-n_it = 10
+n_it = 40
 
 # Choice of objective function
 objective_func = test_func.mystery_vec
@@ -120,6 +120,6 @@ xmat_opti, y_opti = bayes_opti.bayesian_opti(xmat, y, n_it,
 gridsize = [30,30]
 true_y_sol=-1.4565
 true_x_sol=[2.5044,2.5778]
-p=10/100
+p=15/100
 table = metrics.all_metrics(objective_func, bounds, gridsize,
                 y_opti, xmat_opti, true_y_sol, true_x_sol, theta_vec, p_vec, p)
