@@ -20,7 +20,7 @@ import copy
 # **EXECUTION PARAMETERS**
 
 #number of iteration of the whole optimization
-nb_opti = 10
+nb_opti = 1
 
 # number of points selected randomly for initial sampling
 n = 10
