@@ -123,4 +123,5 @@ x, y = bayes_opti.bayesian_opti_plot_1d(xmat,
 # #                                   test_func.test_1d,
 # #                                   bounds=[(0, 10)])
 # #
+
 # # print(xx)

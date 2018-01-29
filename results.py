@@ -73,17 +73,17 @@ for it in range(0,nb_opti):
     params_init = np.concatenate((theta_vec, p_vec))
     
     # MLE for theta and p
-#    if perform_mle:
-#        opti = max_llk.max_log_likelihood(
-#            xmat,
-#            y,
-#            params_init,
-#            fixed_p=False,
-#            mins_list=[0.01, 0.01, 0.1, 0.1],
-#            maxs_list=[None, None, 1.99, 1.99])
-#        print(opti)
-#        theta_vec = opti.x[0:d]
-#        p_vec = opti.x[d:]
+    if perform_mle:
+        opti = max_llk.max_log_likelihood(
+            xmat,
+            y,
+            params_init,
+            fixed_p=False,
+            mins_list=[0.01, 0.01, 0.1, 0.1],
+            maxs_list=[None, None, 1.99, 1.99])
+        print(opti)
+        theta_vec = opti.x[0:d]
+        p_vec = opti.x[d:]
     
     # Plot of initial acquisition function in 2d
     if plot_acq_2d and (d == 2):

@@ -217,4 +217,3 @@ def all_metrics(true_function, bounds, gridsize,
 #true_x_sol=np.array(xmat[2,]+0.0001).reshape(1,2)
 #results = all_metrics(uno, dos, bounds, gridsize, 
 #            y, xmat, true_y_sol, true_x_sol, p=0.5)
-
